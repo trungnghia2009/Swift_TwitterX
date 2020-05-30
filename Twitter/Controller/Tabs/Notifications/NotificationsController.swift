@@ -13,6 +13,8 @@ private let reuseIdentifier = "NotificationCell"
 class NotificationsController: UITableViewController {
 
     //MARK: - Properties
+    var isRemoveObserver = false
+    
     private var notifications = [Notification]() {
         didSet { tableView.reloadData() }
     }
@@ -39,6 +41,7 @@ class NotificationsController: UITableViewController {
         NotificationService.shared.fetchNotifications { (notifications) in
             self.refreshControl?.endRefreshing()
             self.logger("Notifications count: \(notifications.count)")
+            self.isRemoveObserver = true
             self.notifications = notifications
             self.checkIfUserIsFollowed(notifications: notifications)
             
@@ -49,6 +52,7 @@ class NotificationsController: UITableViewController {
     private func configureUI() {
         view.backgroundColor = .white
         navigationItem.title = "Notifications"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Remove All", style: .plain, target: self, action: #selector(handleRightBarButtonTapped))
         
         tableView.register(NotificationCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.rowHeight = 60
@@ -60,7 +64,7 @@ class NotificationsController: UITableViewController {
     }
     
     private func checkIfUserIsFollowed(notifications: [Notification]) {
-        guard !notifications.isEmpty else {
+        guard notifications.count == 0 else {
             logger("There is no notifications")
             return
         }
@@ -79,6 +83,22 @@ class NotificationsController: UITableViewController {
     @objc private func handleRefresh() {
         fetchNotifications()
     }
+    
+    @objc private func handleRightBarButtonTapped() {
+        logger("Handle right bar button tapped..")
+        let alertController = UIAlertController(title: "Remove all notifications", message: "Are you sure you want to remove all notifications ?", preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Remove all", style: .destructive, handler: { (_) in
+            NotificationService.shared.removeAllNotifications { (error, ref) in
+                if let error = error {
+                    self.showAlert(withMessage: error.localizedDescription)
+                    return
+                }
+                self.notifications = []
+            }
+        }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
+        present(alertController, animated: true, completion: nil)
+    }
 
 }
 
@@ -86,7 +106,8 @@ class NotificationsController: UITableViewController {
 extension NotificationsController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if notifications.count == 0 {
-            NotificationService.shared.removeNotificationObserver()
+            logger("isRemoveObserver is \(isRemoveObserver)")
+            if isRemoveObserver { NotificationService.shared.removeNotificationObserver() }
             tableView.setEmptyMessage("There is no notifications \nPlease come back to check later!")
         } else {
             tableView.restore()
@@ -112,9 +133,9 @@ extension NotificationsController {
         if editingStyle == .delete {
             let notification = notifications[indexPath.row]
             
-            NotificationService.shared.deleteNotification(notificationID: notification.notificationID) { (error, ref) in
+            NotificationService.shared.removeNotification(notificationID: notification.notificationID) { (error, ref) in
                 self.notifications.remove(at: indexPath.row)
-                self.tableView.reloadData()
+                self.fetchNotifications()
             }
             
         }

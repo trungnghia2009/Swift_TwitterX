@@ -59,15 +59,20 @@ struct NotificationService {
         }
     }
     
-    func deleteNotification(notificationID: String, completion: @escaping (DatabaseCompletion)) {
+    func removeNotification(notificationID: String, completion: @escaping (DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         kREF_NOTIFICATION.child(uid).child(notificationID).removeValue(completionBlock: completion)
+    }
+    
+    func removeAllNotifications(completion: @escaping(DatabaseCompletion)) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        kREF_NOTIFICATION.child(uid).removeValue(completionBlock: completion)
     }
     
     func removeNotificationObserver() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         kREF_NOTIFICATION.child(uid).removeAllObservers()
     }
-    
+
     
 }

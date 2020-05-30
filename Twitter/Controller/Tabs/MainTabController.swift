@@ -14,6 +14,10 @@ enum ActionButtonConfiguration {
     case message
 }
 
+protocol TabBarReselectHandling {
+    func handleReselect()
+}
+
 class MainTabController: UITabBarController {
     
     //MARK: - Properties
@@ -152,5 +156,15 @@ extension MainTabController: UITabBarControllerDelegate {
             notifications.fetchNotifications()
         }
         
+    }
+    
+    //Handle shouldSelect
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        guard let navigationController = viewController as? UINavigationController else { return true }
+        guard navigationController.viewControllers.count <= 1,
+            let handler = navigationController.viewControllers.first as? TabBarReselectHandling else { return true }
+        handler.handleReselect()
+       
+        return true
     }
 }

@@ -102,6 +102,9 @@ class FeedController: UICollectionViewController {
         let imageView = UIImageView(image: #imageLiteral(resourceName: "twitter_logo_blue"))
         imageView.contentMode = .scaleAspectFit
         imageView.setDimensions(width: 44, height: 44)
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTweetLogoTapped))
+        imageView.addGestureRecognizer(tap)
+        imageView.isUserInteractionEnabled = true
         navigationItem.titleView = imageView
         
         profileImageView.backgroundColor = .white
@@ -134,6 +137,10 @@ class FeedController: UICollectionViewController {
     
     @objc private func handleRefresh() {
         fetchTweetsFollowing()
+    }
+    
+    @objc private func handleTweetLogoTapped() {
+        collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
 
 }
@@ -221,4 +228,15 @@ extension FeedController: TweetCellDelegate {
         let controller = ProfileController(user: user)
         navigationController?.pushViewController(controller, animated: true)
     }
+}
+
+
+//MARK: - TabBarReselectHandling
+extension FeedController: TabBarReselectHandling {
+    func handleReselect() {
+        logger("Select feed Controller")
+        collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+    }
+    
+    
 }
