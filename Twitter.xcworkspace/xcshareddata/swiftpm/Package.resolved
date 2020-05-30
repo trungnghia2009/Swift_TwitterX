@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "SwiftCoroutine",
+        "repositoryURL": "https://github.com/belozierov/SwiftCoroutine.git",
+        "state": {
+          "branch": null,
+          "revision": "5585403f765fcfdb21785eba5dc01c74c2bc59c5",
+          "version": "2.1.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
