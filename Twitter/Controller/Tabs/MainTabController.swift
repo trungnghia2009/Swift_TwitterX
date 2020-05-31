@@ -18,10 +18,19 @@ protocol TabBarReselectHandling {
     func handleReselect()
 }
 
+protocol MainTabControllerDelegate: class {
+    func handleProfileImageTapped(_ controller: FeedController)
+}
+
 class MainTabController: UITabBarController {
     
     //MARK: - Properties
+    weak var delegateCallBack: MainTabControllerDelegate?
+    
+    private let feed = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
+    private let explore = SearchController(config: .userSearch)
     private let notifications = NotificationsController()
+    private let conversations = ConversationsController()
     
     private var buttonConfig: ActionButtonConfiguration = .tweet
     
@@ -45,44 +54,13 @@ class MainTabController: UITabBarController {
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //signOut()
-        authenticateUserAndConfigureUI()
-        
+        configureViewControllers()
+        configureUI()
     }
     
     
     //MARK: - API
-    func fetchUser() {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        UserService.shared.fetchUser(uid: uid) { (user) in
-            self.user = user
-        }
-    }
     
-    func authenticateUserAndConfigureUI() {
-        if Auth.auth().currentUser == nil {
-            logger("User is not logged in..")
-            DispatchQueue.main.async {
-                let nav = UINavigationController(rootViewController: LoginController())
-                nav.modalPresentationStyle = .fullScreen
-                self.present(nav, animated: true, completion: nil)
-            }
-        } else {
-            logger("User is logged in..")
-            configureViewControllers()
-            configureUI()
-            fetchUser()
-        }
-    }
-    
-    private func signOut() {
-        do {
-            try Auth.auth().signOut()
-        } catch let error {
-            logger("Failed to sign out with error, \(error.localizedDescription)")
-        }
-    }
     
     
     //MARK: - Helpers
@@ -96,20 +74,15 @@ class MainTabController: UITabBarController {
     }
     
     private func configureViewControllers() {
-        let feed = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
+        feed.delegate = self
+        
         let nav1 = templateNaviationController(image: UIImage(systemName: "house.fill")!, rootViewController: feed)
-        
-        let explore = SearchController(config: .userSearch)
         let nav2 = templateNaviationController(image: UIImage(systemName: "magnifyingglass")!, rootViewController: explore)
-        
-        //let notifications = NotificationsController()
         let nav3 = templateNaviationController(image: UIImage(systemName: "heart")!, rootViewController: notifications)
-        
-        let conversations = ConversationsController()
         let nav4 = templateNaviationController(image: UIImage(systemName: "envelope")!, rootViewController: conversations)
 
         viewControllers = [nav1, nav2, nav3, nav4]
-        tabBar.items![3].badgeValue = "2"
+        tabBar.items![2].badgeValue = "3"
     }
     
     private func templateNaviationController(image: UIImage, rootViewController: UIViewController) -> UINavigationController {
@@ -167,4 +140,12 @@ extension MainTabController: UITabBarControllerDelegate {
        
         return true
     }
+}
+
+extension MainTabController: FeedControllerDelegate {
+    func handleProfileImageTapped(_ controller: FeedController) {
+        delegateCallBack?.handleProfileImageTapped(controller)
+    }
+    
+    
 }

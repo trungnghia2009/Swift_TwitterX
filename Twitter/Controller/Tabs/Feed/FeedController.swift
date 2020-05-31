@@ -12,9 +12,15 @@ import SwiftCoroutine
 
 private let reuseIdentifier = "TweetCell"
 
+protocol FeedControllerDelegate: class {
+    func handleProfileImageTapped(_ controller: FeedController)
+}
+
 class FeedController: UICollectionViewController {
 
     //MARK: - Properties
+    weak var delegate: FeedControllerDelegate?
+    
     private let profileImageView = UIImageView()
     
     var user: User? {
@@ -30,7 +36,6 @@ class FeedController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        //fetchTweets()
         fetchTweetsFollowing()
     }
     
@@ -42,24 +47,7 @@ class FeedController: UICollectionViewController {
     }
     
     
-    //MARK: - APi
-    private func fetchTweets() {
-        // First, fetch all tweets
-        // Second, fetch all likes
-        showLoader(true, withText: "Loading tweets")
-        TweetService.shared.fetchTweets { (tweets) in
-            self.showLoader(false)
-            self.tweets = tweets
-            
-            for (index, tweet) in tweets.enumerated() {
-                TweetService.shared.checkIfUserLikedTweet(tweet: tweet) { (bool) in
-                    if bool == false { return }
-                    self.tweets[index].isLiked = bool
-                }
-            }
-        }
-    }
-    
+    //MARK: - API
     private func fetchTweetsFollowing() {
         // First, fetch all tweets
         // Second, fetch all likes
@@ -121,6 +109,7 @@ class FeedController: UICollectionViewController {
     private func configureLeftBarButton() {
         guard let user = user else { return }
         let url = URL(string: user.profileImageUrl)
+        logger("Print \(user.profileImageUrl)")
         profileImageView.sd_setImage(with: url)
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleLeftBarButtonTapped))
         profileImageView.addGestureRecognizer(tap)
@@ -129,10 +118,7 @@ class FeedController: UICollectionViewController {
     
     //MARK: - Selectors
     @objc private func handleLeftBarButtonTapped() {
-        if let user = user {
-            let controller = ProfileController(user: user)
-            navigationController?.pushViewController(controller, animated: true)
-        }
+        delegate?.handleProfileImageTapped(self)
     }
     
     @objc private func handleRefresh() {

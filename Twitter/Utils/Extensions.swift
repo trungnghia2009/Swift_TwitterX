@@ -261,14 +261,4 @@ extension UITableView {
     func restore() {
         self.backgroundView = nil
     }
-
-    public func numberOfRows() -> Int {
-        var section = 0
-        var rowCount = 0
-        while section < numberOfSections {
-            rowCount += numberOfRows(inSection: section)
-            section += 1
-        }
-        return rowCount
-      }
 }

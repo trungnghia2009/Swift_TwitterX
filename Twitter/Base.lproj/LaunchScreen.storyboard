@@ -10,7 +10,7 @@
         <!--View Controller-->
         <scene sceneID="EHf-IW-A2E">
             <objects>
-                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="splashController" id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -22,12 +22,18 @@
                                     <constraint firstAttribute="height" constant="128" id="qon-4c-m9e"/>
                                 </constraints>
                             </imageView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="7xt-70-L5V">
+                                <rect key="frame" x="188.66666666666666" y="532" width="37" height="37"/>
+                                <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" red="0.059653505680000003" green="0.58762907980000001" blue="0.90769004819999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <color key="tintColor" red="0.1230166927" green="0.66959881779999997" blue="0.95913606880000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="kU2-Bq-KIi" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="5KT-JE-y9W"/>
+                            <constraint firstItem="7xt-70-L5V" firstAttribute="top" secondItem="kU2-Bq-KIi" secondAttribute="bottom" constant="20" id="6Ry-eV-AFZ"/>
                             <constraint firstItem="kU2-Bq-KIi" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="geD-2s-cSm"/>
+                            <constraint firstItem="7xt-70-L5V" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="qAj-MN-NNe"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

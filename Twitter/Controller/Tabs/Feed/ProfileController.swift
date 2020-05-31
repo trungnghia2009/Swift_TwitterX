@@ -238,9 +238,7 @@ extension ProfileController: EditProfileControllerDelegate {
         
         do {
             try Auth.auth().signOut()
-            let nav = UINavigationController(rootViewController: LoginController())
-            nav.modalPresentationStyle = .fullScreen
-            self.present(nav, animated: true, completion: nil)
+            PresenterManager.shared.show(vc: .loginController)
         } catch let error {
             print("Failed to sign out with error, \(error.localizedDescription)")
         }

@@ -39,12 +39,16 @@
 		2C52AE2324791EB900C7BD2C /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C52AE2224791EB900C7BD2C /* Tweet.swift */; };
 		2C52AE25247934CA00C7BD2C /* TweetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C52AE24247934CA00C7BD2C /* TweetCell.swift */; };
 		2C52AE272479850D00C7BD2C /* TweetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C52AE262479850D00C7BD2C /* TweetViewModel.swift */; };
+		2C58607924834CBA00386E38 /* MenuHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C58607824834CBA00386E38 /* MenuHeader.swift */; };
 		2C5A4E0C247C9D8B00E9B96A /* ActionSheetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A4E0B247C9D8B00E9B96A /* ActionSheetCell.swift */; };
 		2C5A4E0E247CAA8800E9B96A /* ActionSheetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A4E0D247CAA8800E9B96A /* ActionSheetViewModel.swift */; };
 		2C5A4E10247D1E1100E9B96A /* Notification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A4E0F247D1E1100E9B96A /* Notification.swift */; };
 		2C5A4E12247D505B00E9B96A /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A4E11247D505B00E9B96A /* NotificationService.swift */; };
 		2C5A4E15247D6ECB00E9B96A /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A4E14247D6ECB00E9B96A /* NotificationCell.swift */; };
 		2C5A4E17247D80AA00E9B96A /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C5A4E16247D80AA00E9B96A /* NotificationViewModel.swift */; };
+		2C6270BE2482A20B007402B6 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6270BD2482A20B007402B6 /* MenuController.swift */; };
+		2C6270C02482A231007402B6 /* ContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6270BF2482A231007402B6 /* ContainerController.swift */; };
+		2C6270C22482ADF0007402B6 /* PresenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6270C12482ADF0007402B6 /* PresenterManager.swift */; };
 		2C6B014B2479F678002B04E8 /* ProfileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6B014A2479F678002B04E8 /* ProfileController.swift */; };
 		2C6B014D2479FE3B002B04E8 /* ProfileHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6B014C2479FE3B002B04E8 /* ProfileHeader.swift */; };
 		2C6B014F247A1379002B04E8 /* ProfileFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6B014E247A1379002B04E8 /* ProfileFilterView.swift */; };
@@ -95,12 +99,16 @@
 		2C52AE2224791EB900C7BD2C /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
 		2C52AE24247934CA00C7BD2C /* TweetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetCell.swift; sourceTree = "<group>"; };
 		2C52AE262479850D00C7BD2C /* TweetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetViewModel.swift; sourceTree = "<group>"; };
+		2C58607824834CBA00386E38 /* MenuHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeader.swift; sourceTree = "<group>"; };
 		2C5A4E0B247C9D8B00E9B96A /* ActionSheetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetCell.swift; sourceTree = "<group>"; };
 		2C5A4E0D247CAA8800E9B96A /* ActionSheetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetViewModel.swift; sourceTree = "<group>"; };
 		2C5A4E0F247D1E1100E9B96A /* Notification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notification.swift; sourceTree = "<group>"; };
 		2C5A4E11247D505B00E9B96A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C5A4E14247D6ECB00E9B96A /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
 		2C5A4E16247D80AA00E9B96A /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
+		2C6270BD2482A20B007402B6 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
+		2C6270BF2482A231007402B6 /* ContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerController.swift; sourceTree = "<group>"; };
+		2C6270C12482ADF0007402B6 /* PresenterManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresenterManager.swift; sourceTree = "<group>"; };
 		2C6B014A2479F678002B04E8 /* ProfileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileController.swift; sourceTree = "<group>"; };
 		2C6B014C2479FE3B002B04E8 /* ProfileHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeader.swift; sourceTree = "<group>"; };
 		2C6B014E247A1379002B04E8 /* ProfileFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFilterView.swift; sourceTree = "<group>"; };
@@ -201,6 +209,7 @@
 				2C78D2B82477BCFE002520BE /* Extensions.swift */,
 				2CB3EEA3247817BF00917978 /* Constants.swift */,
 				2C4CC570247C246A0083C6F1 /* ActionSheetLauncher.swift */,
+				2C6270C12482ADF0007402B6 /* PresenterManager.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -220,6 +229,7 @@
 			isa = PBXGroup;
 			children = (
 				2C78D2BA2477C388002520BE /* Authentication */,
+				2C6270BC2482A187007402B6 /* SideMenu */,
 				2C52AE162478D8F500C7BD2C /* Tabs */,
 			);
 			path = Controller;
@@ -245,6 +255,7 @@
 			children = (
 				2C4CC566247B11CD0083C6F1 /* Authentication */,
 				2C4142AA247FA1CC00FA55BA /* Profile */,
+				2C58607724834C9C00386E38 /* Menu */,
 				2C52AE1E2478EDCC00C7BD2C /* CaptionTextView.swift */,
 				2C52AE24247934CA00C7BD2C /* TweetCell.swift */,
 				2C4CC56C247BA9C10083C6F1 /* TweetHeader.swift */,
@@ -312,6 +323,23 @@
 				2C4F30692477B0730053B80D /* NotificationsController.swift */,
 			);
 			path = Notifications;
+			sourceTree = "<group>";
+		};
+		2C58607724834C9C00386E38 /* Menu */ = {
+			isa = PBXGroup;
+			children = (
+				2C58607824834CBA00386E38 /* MenuHeader.swift */,
+			);
+			path = Menu;
+			sourceTree = "<group>";
+		};
+		2C6270BC2482A187007402B6 /* SideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				2C6270BD2482A20B007402B6 /* MenuController.swift */,
+				2C6270BF2482A231007402B6 /* ContainerController.swift */,
+			);
+			path = SideMenu;
 			sourceTree = "<group>";
 		};
 		2C78D2BA2477C388002520BE /* Authentication */ = {
@@ -483,6 +511,7 @@
 				2C4CC56F247BF6370083C6F1 /* UploadTweetViewModel.swift in Sources */,
 				2C5A4E0C247C9D8B00E9B96A /* ActionSheetCell.swift in Sources */,
 				2C5A4E10247D1E1100E9B96A /* Notification.swift in Sources */,
+				2C58607924834CBA00386E38 /* MenuHeader.swift in Sources */,
 				2C78D2B92477BCFE002520BE /* Extensions.swift in Sources */,
 				2CB3EEA4247817BF00917978 /* Constants.swift in Sources */,
 				2C52AE1F2478EDCC00C7BD2C /* CaptionTextView.swift in Sources */,
@@ -494,14 +523,17 @@
 				2C4142A9247F9C1400FA55BA /* EditProfileController.swift in Sources */,
 				2CB3EE982477D1B700917978 /* LoginViewModel.swift in Sources */,
 				2C52AE21247916DB00C7BD2C /* TweetService.swift in Sources */,
+				2C6270C02482A231007402B6 /* ContainerController.swift in Sources */,
 				2C5A4E12247D505B00E9B96A /* NotificationService.swift in Sources */,
 				2C4142AE247FAE1A00FA55BA /* EditProfileViewModel.swift in Sources */,
 				2C4CC571247C246A0083C6F1 /* ActionSheetLauncher.swift in Sources */,
+				2C6270C22482ADF0007402B6 /* PresenterManager.swift in Sources */,
 				2CB3EE942477C79000917978 /* CustomTextField.swift in Sources */,
 				2C4CC56D247BA9C10083C6F1 /* TweetHeader.swift in Sources */,
 				2C6B014D2479FE3B002B04E8 /* ProfileHeader.swift in Sources */,
 				2C52AE25247934CA00C7BD2C /* TweetCell.swift in Sources */,
 				2C4F304C2477748C0053B80D /* SceneDelegate.swift in Sources */,
+				2C6270BE2482A20B007402B6 /* MenuController.swift in Sources */,
 				2C52AE152478B6DC00C7BD2C /* User.swift in Sources */,
 				2CB3EEA22478177300917978 /* AuthService.swift in Sources */,
 				2C52AE2324791EB900C7BD2C /* Tweet.swift in Sources */,

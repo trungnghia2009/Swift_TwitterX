@@ -142,12 +142,13 @@ class LoginController: UIViewController {
             }
             
             // configure UI for Login
-            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate,
-                let window = sceneDelegate.window?.rootViewController as? MainTabController {
-                window.authenticateUserAndConfigureUI()
-            }
-            
-            self.dismiss(animated: true, completion: nil)
+//            if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate,
+//                let window = sceneDelegate.window?.rootViewController as? MainTabController {
+//                window.authenticateUserAndConfigureUI()
+//            }
+//
+//            self.dismiss(animated: true, completion: nil)
+            PresenterManager.shared.show(vc: .containerController)
         }
     }
     

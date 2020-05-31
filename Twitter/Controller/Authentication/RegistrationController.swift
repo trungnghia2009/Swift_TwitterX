@@ -168,12 +168,13 @@ class RegistrationController: UIViewController {
                 }
                 
                 // configure UI for SignIn
-                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate,
-                    let window = sceneDelegate.window?.rootViewController as? MainTabController {
-                    window.authenticateUserAndConfigureUI()
-                }
-                
-                self.dismiss(animated: true, completion: nil)
+//                if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate,
+//                    let window = sceneDelegate.window?.rootViewController as? MainTabController {
+//                    window.authenticateUserAndConfigureUI()
+//                }
+//
+//                self.dismiss(animated: true, completion: nil)
+                PresenterManager.shared.show(vc: .containerController)
             }
         }
     }
