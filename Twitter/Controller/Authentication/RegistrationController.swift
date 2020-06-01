@@ -95,9 +95,19 @@ class RegistrationController: UIViewController {
     
     }
     
-
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.barStyle = .black
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.navigationBar.barStyle = .default
+    }
+    
     //MARK: - Helpers
     private func configureUI() {
+        
         view.backgroundColor = .twitterBlue
         dismissKeyboardIfTappingOutside()
         

@@ -88,7 +88,7 @@ class MenuHeader: UIView {
         backgroundColor = .white
         
         addSubview(profileImageView)
-        profileImageView.anchor(top: safeAreaLayoutGuide.topAnchor, left: leftAnchor, paddingTop: 4, paddingLeft: 12)
+        profileImageView.anchor(top: safeAreaLayoutGuide.topAnchor, left: leftAnchor, paddingTop: 10, paddingLeft: 12)
         
         let userDetailStack = UIStackView(arrangedSubviews: [fullnameLabel, usernameLabel])
         userDetailStack.axis = .vertical

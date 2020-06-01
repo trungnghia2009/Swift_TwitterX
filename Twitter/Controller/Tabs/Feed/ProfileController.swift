@@ -12,10 +12,16 @@ import Firebase
 private let reuseIdentifer = "TweetCell"
 private let headerIndentifier = "ProfileHeader"
 
+enum CallFromOptions {
+    case fromMenu
+    case fromOthers
+}
+
 class ProfileController: UICollectionViewController {
     
     //MARK: - Properties
     private var user: User
+    private let callFromOption: CallFromOptions
     
     private var selectedFilter: ProfileFilterOptions = .tweets {
         didSet { collectionView.reloadData() }
@@ -38,7 +44,8 @@ class ProfileController: UICollectionViewController {
     }
     
     //MARK: - Lifecycle
-    init(user: User) {
+    init(user: User, callFromOption: CallFromOptions = .fromOthers) {
+        self.callFromOption = callFromOption
         self.user = user
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
     }
@@ -226,7 +233,14 @@ extension ProfileController: ProfileHeaderDelegate {
     }
     
     func handleDismissal() {
-        navigationController?.popViewController(animated: true)
+        switch callFromOption {
+    
+        case .fromMenu:
+            dismiss(animated: true, completion: nil)
+        case .fromOthers:
+            navigationController?.popViewController(animated: true)
+        }
+        
     }
     
     

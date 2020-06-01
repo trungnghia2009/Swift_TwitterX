@@ -89,12 +89,17 @@ class LoginController: UIViewController {
         toggleFlag = false
         showButton.setImage(UIImage(systemName: "eye.fill"), for: .normal)
         passwordTextField.isSecureTextEntry = true
+        navigationController?.navigationBar.barStyle = .black
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.navigationBar.barStyle = .default
     }
     
     //MARK: - Helpers
     private func configureUI() {
         navigationController?.navigationBar.isHidden = true
-        navigationController?.navigationBar.barStyle = .black
         view.backgroundColor = .twitterBlue
         dismissKeyboardIfTappingOutside()
         

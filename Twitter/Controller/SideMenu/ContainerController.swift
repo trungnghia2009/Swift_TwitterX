@@ -30,7 +30,7 @@ class ContainerController: UIViewController {
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        navigationController?.navigationBar.barStyle = .default
         checkIfUserIsLoggedIn()
     }
     
@@ -45,7 +45,7 @@ class ContainerController: UIViewController {
     
     
     //MARK: - API
-    func checkIfUserIsLoggedIn() {
+    private func checkIfUserIsLoggedIn() {
         if Auth.auth().currentUser == nil {
             logger("User is not logged in..")
             DispatchQueue.main.async {
@@ -58,10 +58,19 @@ class ContainerController: UIViewController {
         }
     }
     
-    func fetchUser() {
+    private func fetchUser() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         UserService.shared.fetchUser(uid: uid) { (user) in
             self.user = user
+        }
+    }
+    
+    private func logout() {
+        do {
+            try Auth.auth().signOut()
+            PresenterManager.shared.show(vc: .loginController)
+        } catch let error {
+            print("Failed to sign out with error, \(error.localizedDescription)")
         }
     }
     
@@ -95,7 +104,7 @@ class ContainerController: UIViewController {
        }
     
     private func animateStatusBar() {
-        UIView.animate(withDuration: 0.5) {
+        UIView.animate(withDuration: 0.1) {
             self.setNeedsStatusBarAppearanceUpdate()
         }
     }
@@ -114,6 +123,13 @@ class ContainerController: UIViewController {
         }
         
         animateStatusBar()
+    }
+    
+    private func presentProfileController(withUser user: User) {
+        let controller = ProfileController(user: user, callFromOption: .fromMenu)
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        self.present(nav, animated: true, completion: nil)
     }
     
     
@@ -144,13 +160,32 @@ extension ContainerController: MainTabControllerDelegate {
 
 //MARK: - MenuControllerDelegate
 extension ContainerController: MenuControllerDelegate {
-    func handleProfileImageTapped(_ header: MenuHeader) {
+    func handleMenuOption(_ controller: MenuController, option: MenuOptions) {
+        self.isHideStatusBar = false
         animateMenu(shouldExpand: false) { (_) in
-            let controller = ProfileController(user: header.user)
-            let nav = UINavigationController(rootViewController: controller)
-            self.navigationController?.pushViewController(nav, animated: true)
             
+            switch option {
+            case .profile:
+                self.presentProfileController(withUser: controller.user)
+            case .lists:
+                self.logger("tapped lists")
+            case .logout:
+                let alertController = UIAlertController(title: nil, message: "Are you sure you want to log out ?", preferredStyle: .actionSheet)
+                alertController.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { (_) in
+                    self.logout()
+                }))
+                alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                
+                self.present(alertController, animated: true, completion: nil)
+            }
         }
+        
+    }
+    
+    func handleProfileImageTapped(_ header: MenuHeader) {
+        isHideStatusBar = false
+        animateMenu(shouldExpand: false)
+        presentProfileController(withUser: header.user)
         
     }
     

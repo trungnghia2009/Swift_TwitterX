@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import SDWebImage
-import SwiftCoroutine
 
 private let reuseIdentifier = "TweetCell"
 
@@ -31,6 +29,7 @@ class FeedController: UICollectionViewController {
         didSet { collectionView.reloadData() }
     }
     
+    private var isHideStatusBar = false
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -45,6 +44,22 @@ class FeedController: UICollectionViewController {
         navigationController?.navigationBar.isHidden = false
         tabBarController?.tabBar.isHidden = false
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
+    
+//    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        if scrollView.panGestureRecognizer.translation(in: scrollView).y < 0 {
+//            navigationController?.setNavigationBarHidden(true, animated: true)
+//
+//        } else {
+//            navigationController?.setNavigationBarHidden(false, animated: true)
+//            isHideStatusBar = false
+//        }
+//    }
     
     
     //MARK: - API
@@ -224,5 +239,5 @@ extension FeedController: TabBarReselectHandling {
         collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
     
-    
 }
+

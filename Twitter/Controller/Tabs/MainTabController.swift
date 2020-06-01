@@ -47,6 +47,10 @@ class MainTabController: UITabBarController {
         button.tintColor = .white
         button.backgroundColor = #colorLiteral(red: 0.05965350568, green: 0.5876290798, blue: 0.9076900482, alpha: 1)
         button.setImage(#imageLiteral(resourceName: "new_tweet"), for: .normal)
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowOffset = CGSize(width: 5, height: 5)
+        button.layer.shadowRadius = 4
+        button.layer.shadowOpacity = 0.2
         button.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -60,7 +64,6 @@ class MainTabController: UITabBarController {
     
     
     //MARK: - API
-    
     
     
     //MARK: - Helpers

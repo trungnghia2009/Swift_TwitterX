@@ -7,11 +7,13 @@
 //
 
 import UIKit
+import Firebase
 
 private let reuseIdentifier = "MenuCell"
 
 protocol MenuControllerDelegate: class {
     func handleProfileImageTapped(_ header: MenuHeader)
+    func handleMenuOption(_ controller: MenuController, option: MenuOptions)
 }
 
 class MenuController: UITableViewController {
@@ -45,7 +47,6 @@ class MenuController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configureUI()
         configureTableView()
         fetchUserStats()
@@ -70,7 +71,7 @@ class MenuController: UITableViewController {
         tableView.separatorStyle = .none
         tableView.isScrollEnabled = false
         tableView.rowHeight = 60
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.register(MenuCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.tableHeaderView = menuHeader
         menuHeader.delegate = self
     }
@@ -84,12 +85,12 @@ class MenuController: UITableViewController {
 //MARK: - UITableViewDataSource
 extension MenuController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return MenuOptions.allCases.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
-        cell.textLabel?.text = "Option \(indexPath.row)"
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! MenuCell
+        cell.option = MenuOptions.allCases[indexPath.row]
         return cell
     }
    
@@ -98,7 +99,9 @@ extension MenuController {
 //MARK: - UITableViewDelegate
 extension MenuController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        logger("Selected Option \(indexPath.row)")
+        let option = MenuOptions.allCases[indexPath.row]
+        delegate?.handleMenuOption(self, option: option)
+        
     }
 }
 

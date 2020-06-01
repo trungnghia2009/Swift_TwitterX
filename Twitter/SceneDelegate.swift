@@ -23,7 +23,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window?.rootViewController = rootVC
             self.window?.makeKeyAndVisible()
             Timer.scheduledTimer(timeInterval: 0, target: self, selector: #selector(dismissSplashController), userInfo: nil, repeats: false)
-            
         }
 
         @objc func dismissSplashController() {
