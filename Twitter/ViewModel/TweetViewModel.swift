@@ -38,7 +38,7 @@ struct TweetViewModel {
     }
     
     var likesAtributedString: NSAttributedString {
-        return attributedText(withValue: tweet.likes, text: "Like")
+        return attributedText(withValue: tweet.likes, text: "Likes")
     }
     
     var userInfoText: NSAttributedString {
@@ -78,10 +78,11 @@ struct TweetViewModel {
     
     
     //MARK: - Helpers
-    func size(forWidth width: CGFloat) -> CGSize {
+    func sizeForTweetCaption(forWidth width: CGFloat, fontSize size: CGFloat) -> CGSize {
         let measurementLabel = UILabel()
         measurementLabel.text = tweet.caption
         measurementLabel.numberOfLines = 0
+        measurementLabel.font = UIFont.systemFont(ofSize: size)
         measurementLabel.lineBreakMode = .byWordWrapping
         measurementLabel.translatesAutoresizingMaskIntoConstraints = false
         measurementLabel.widthAnchor.constraint(equalToConstant: width).isActive = true

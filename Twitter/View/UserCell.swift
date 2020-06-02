@@ -27,15 +27,14 @@ class UserCell: UITableViewCell {
     
     private let usernameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 14)
-        label.text = "username"
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = .lightGray
         return label
     }()
     
     private let fullnameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "fullname"
+        label.font = UIFont.boldSystemFont(ofSize: 14)
         return label
     }()
 
@@ -47,7 +46,7 @@ class UserCell: UITableViewCell {
         addSubview(profileImageView)
         profileImageView.centerY(inView: self, left: leftAnchor, paddingLeft: 8)
         
-        let stack = UIStackView(arrangedSubviews: [usernameLabel, fullnameLabel])
+        let stack = UIStackView(arrangedSubviews: [fullnameLabel, usernameLabel])
         stack.spacing = 4
         stack.axis = .vertical
         
@@ -65,7 +64,7 @@ class UserCell: UITableViewCell {
         
         profileImageView.sd_setImage(with: URL(string: user.profileImageUrl))
         fullnameLabel.text = user.fullname
-        usernameLabel.text = user.username
+        usernameLabel.text = "@\(user.username)"
     }
     
 }

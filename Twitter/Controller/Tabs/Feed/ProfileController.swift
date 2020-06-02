@@ -73,6 +73,17 @@ class ProfileController: UICollectionViewController {
         tabBarController?.tabBar.isHidden = true
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.navigationBar.barStyle = .default
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        navigationController?.navigationBar.isHidden = false
+    }
+    
+    
     //MARK: - API
     private func fetchTweets() {
         TweetService.shared.fetchTweets(forUser: user) { (tweets) in
@@ -82,7 +93,7 @@ class ProfileController: UICollectionViewController {
     
     private func fetchReplies() {
         TweetService.shared.fetchReplies(forUser: user) { (tweets) in
-            self.replies = tweets
+            self.replies = tweets.sorted(by: { $0.timestamp > $1.timestamp })
         }
     }
     
@@ -115,6 +126,7 @@ class ProfileController: UICollectionViewController {
         collectionView.contentInsetAdjustmentBehavior = .never // cover header into status bar
         collectionView.showsVerticalScrollIndicator = false
         
+        
         // Register cell and header
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifer)
         collectionView.register(ProfileHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIndentifier)
@@ -122,10 +134,21 @@ class ProfileController: UICollectionViewController {
         //Fix tabBar overlapping collectionView content
         //guard let tabHeight = tabBarController?.tabBar.frame.height else { return }
         //collectionView.contentInset.bottom = tabHeight
+        
+        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.sectionHeadersPinToVisibleBounds = true
+        }
     }
     
-    //MARK: - Selectors
+    private func presentUserListController(withUser user: User, withType type: ListType) {
+        let controller = UserListController(user: user, type: type)
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+    }
+    
 }
+
 
 //MARK: - UICollectionViewDataSource/Delegate for cell
 extension ProfileController {
@@ -173,7 +196,7 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
     //Size for cell
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let viewModel = TweetViewModel(tweet: currentDataSource[indexPath.row])
-        var height = viewModel.size(forWidth: view.frame.width).height
+        var height = viewModel.sizeForTweetCaption(forWidth: view.frame.width - 80, fontSize: 14).height
         
         if currentDataSource[indexPath.row].isReply {
             height = height + 15
@@ -185,6 +208,16 @@ extension ProfileController: UICollectionViewDelegateFlowLayout {
 
 //MARK: - ProfileHeaderDelegate
 extension ProfileController: ProfileHeaderDelegate {
+    func handleFollowersTapped() {
+        let controller = UserListController(user: user, type: .followers)
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    func handleFollowingTapped() {
+        let controller = UserListController(user: user, type: .following)
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
     func showProfileImage(_ header: ProfileHeader) {
         logger("Handle profile image tapped..")
         guard let user = header.user else { return }

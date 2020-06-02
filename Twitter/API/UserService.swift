@@ -109,6 +109,64 @@ struct UserService {
         }
     }
     
+    func fetchFollowing(withUser user: User, completion: @escaping([User]) -> Void) {
+        var users = [User]()
+        
+        kREF_USER_FOLLOWING.child(user.uid).observe(.childAdded) { (snapshot) in
+            let followingID = snapshot.key
+            
+            kREF_USERS.child(followingID).observeSingleEvent(of: .value) { (snapshot) in
+                guard let dictionary = snapshot.value as? [String: Any] else { return }
+                var user = User(uid: followingID, dictionary: dictionary)
+                user.isFollowed = true
+                users.append(user)
+                completion(users)
+            }
+        }
+    }
+    
+    func fetchFollowers(withUser user: User, completion: @escaping([User]) -> Void) {
+        var users = [User]()
+        
+        kREF_USER_FOLLOWERS.child(user.uid).observe(.childAdded) { (snapshot) in
+            let followerID = snapshot.key
+            
+            kREF_USERS.child(followerID).observeSingleEvent(of: .value) { (snapshot) in
+                guard let dictionary = snapshot.value as? [String: Any] else { return }
+                let uid = snapshot.key
+                self.checkIfUserIsFollowed(uid: uid) { (bool) in
+                    var user = User(uid: followerID, dictionary: dictionary)
+                    user.isFollowed = bool
+                    users.append(user)
+                    completion(users)
+                }
+            }
+        }
+    }
+    
+    func fetchLikedUsers(withTweetID tweetID: String, completion: @escaping([User]) -> Void) {
+        var users = [User]()
+        
+        kREF_TWEET_LIKES.child(tweetID).observe(.childAdded) { (snapshot) in
+            let likedUserID = snapshot.key
+            
+            kREF_USERS.child(likedUserID).observeSingleEvent(of: .value) { (snapshot) in
+                guard let dictionary = snapshot.value as? [String: Any] else { return}
+                let uid = snapshot.key
+                self.checkIfUserIsFollowed(uid: uid) { (bool) in
+                    var user = User(uid: likedUserID, dictionary: dictionary)
+                    user.isFollowed = bool
+                    users.append(user)
+                    completion(users)
+                }
+            }
+        }
+        
+        
+        
+        
+    }
+    
     
     
 }

@@ -13,6 +13,9 @@ private let reuseIdentifier = "MenuCell"
 
 protocol MenuControllerDelegate: class {
     func handleProfileImageTapped(_ header: MenuHeader)
+    func handleFollowersTapped(_ header: MenuHeader)
+    func handleFollowingTapped(_ header: MenuHeader)
+    
     func handleMenuOption(_ controller: MenuController, option: MenuOptions)
 }
 
@@ -108,9 +111,19 @@ extension MenuController {
 
 //MARK: - MenuHeaderDelegate
 extension MenuController: MenuHeaderDelegate {
+    
     func handleProfileImageTapped(_ header: MenuHeader) {
         delegate?.handleProfileImageTapped(header)
     }
+    
+    func handleFollowersTapped(_ header: MenuHeader) {
+        delegate?.handleFollowersTapped(header)
+    }
+    
+    func handleFollowingTapped(_ header: MenuHeader) {
+        delegate?.handleFollowingTapped(header)
+    }
+    
     
     
 }

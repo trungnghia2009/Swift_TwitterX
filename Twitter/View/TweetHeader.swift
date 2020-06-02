@@ -13,6 +13,7 @@ protocol TweetHeaderDelegate: class {
     func showActionSheet()
     func handleProfileImageTapped(_ header: TweetHeader)
     func handleFetchUser(withUsername username: String)
+    func handleLikedUsersTapped(_ header: TweetHeader)
 }
 
 class TweetHeader: UICollectionReusableView {
@@ -95,7 +96,7 @@ class TweetHeader: UICollectionReusableView {
         return view
     }()
     
-    private lazy var statsView: UIView = {
+    private lazy var                                                                                                                                                                            statsView: UIView = {
         let view = UIView()
         
         let upDivider = UIView()
@@ -121,17 +122,23 @@ class TweetHeader: UICollectionReusableView {
         return view
     }()
     
-    private let retweetsLabel: UILabel = {
+    private lazy var retweetsLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.text = "2 Retweets"
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleRetweetsTapped))
+        label.addGestureRecognizer(tap)
+        label.isUserInteractionEnabled = true
         return label
     }()
     
-    private let likesLabel: UILabel = {
+    private lazy var likesLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.text = "0 Likes"
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleLikedUsersTapped))
+        label.addGestureRecognizer(tap)
+        label.isUserInteractionEnabled = true
         return label
     }()
     
@@ -157,6 +164,13 @@ class TweetHeader: UICollectionReusableView {
         let button = createButton(withImageName: "share")
         button.addTarget(self, action: #selector(handleShareTapped), for: .touchUpInside)
         return button
+    }()
+    
+    private let botomDivider: UIView = {
+        let view = UIView()
+        view.backgroundColor = .systemGroupedBackground
+        view.setHeight(height: 1.0)
+        return view
     }()
     
     //MARK: - Lifecycle
@@ -202,11 +216,13 @@ class TweetHeader: UICollectionReusableView {
                                                          likeButton,
                                                          shareButton])
         actionStack.axis = .horizontal
-        actionStack.spacing = 72
+        actionStack.distribution = .equalSpacing
         
         addSubview(actionStack)
-        actionStack.centerX(inView: self)
-        actionStack.anchor(top: statsView.bottomAnchor, paddingTop: 20)
+        actionStack.anchor(top: statsView.bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 16, paddingLeft: 32, paddingRight: 32)
+        
+        addSubview(botomDivider)
+        botomDivider.anchor(top: actionStack.bottomAnchor, left: leftAnchor, right: rightAnchor, paddingTop: 16)
         
         configureMentionHandler()
         
@@ -241,7 +257,7 @@ class TweetHeader: UICollectionReusableView {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: imageName), for: .normal)
         button.tintColor = .darkGray
-        button.setDimensions(width: 20, height: 20)
+        button.setDimensions(width: 25, height: 25)
         return button
     }
     
@@ -259,6 +275,14 @@ class TweetHeader: UICollectionReusableView {
     
     @objc private func handleActionSheet() {
         delegate?.showActionSheet()
+    }
+    
+    @objc private func handleRetweetsTapped() {
+         print("Debug: Handle retweets tapped here..")
+    }
+    
+    @objc private func handleLikedUsersTapped() {
+        delegate?.handleLikedUsersTapped(self)
     }
     
     @objc private func handleCommentTapped() {

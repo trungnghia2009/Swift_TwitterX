@@ -59,10 +59,25 @@ class TweetCell: UICollectionViewCell {
     
     private let infoLabel = UILabel()
     
+    private lazy var optionButon: UIButton = {
+        let button = UIButton(type: .system)
+        button.tintColor = .lightGray
+        button.setImage(#imageLiteral(resourceName: "down_arrow_24pt"), for: .normal)
+        button.addTarget(self, action: #selector(handleActionSheet), for: .touchUpInside)
+        return button
+    }()
+    
     private lazy var commentButton: UIButton = {
         let button = createButton(withImageName: "comment")
         button.addTarget(self, action: #selector(handleCommentTapped), for: .touchUpInside)
         return button
+    }()
+    
+    private let commentAmount: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.text = "1"
+        return label
     }()
     
     private lazy var retweetButton: UIButton = {
@@ -71,10 +86,24 @@ class TweetCell: UICollectionViewCell {
         return button
     }()
     
+    private let retweetAmount: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.text = "2"
+        return label
+    }()
+    
     private lazy var likeButton: UIButton = {
         let button = createButton(withImageName: "like")
         button.addTarget(self, action: #selector(handleLikeTapped), for: .touchUpInside)
         return button
+    }()
+    
+    private let likeAmount: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 12)
+        label.text = "15"
+        return label
     }()
     
     private lazy var shareButton: UIButton = {
@@ -104,6 +133,7 @@ class TweetCell: UICollectionViewCell {
         addSubview(profileImageView)
         profileImageView.anchor(top: replyStack.bottomAnchor, left: leftAnchor, paddingTop: 8, paddingLeft: 8)
         
+        // captionLabel constrains(left: 68, right: 12)
         let stack = UIStackView(arrangedSubviews: [infoLabel, captionLabel])
         stack.axis = .vertical
         stack.spacing = 4
@@ -113,16 +143,28 @@ class TweetCell: UICollectionViewCell {
         stack.anchor(top: profileImageView.topAnchor, left: profileImageView.rightAnchor, right: rightAnchor,
                      paddingLeft: 12, paddingRight: 12)
         
+        addSubview(optionButon)
+        optionButon.centerY(inView: infoLabel)
+        optionButon.anchor(right: rightAnchor, paddingRight: 8)
+        
         let actionStack = UIStackView(arrangedSubviews: [commentButton,
                                                          retweetButton,
                                                          likeButton,
                                                          shareButton])
         actionStack.axis = .horizontal
-        actionStack.spacing = 72
+        actionStack.distribution = .equalSpacing
         
         addSubview(actionStack)
-        actionStack.centerX(inView: self)
-        actionStack.anchor(bottom: bottomAnchor, paddingBottom: 8)
+        actionStack.anchor(left: stack.leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingBottom: 8, paddingRight: 48)
+        
+        addSubview(commentAmount)
+        commentAmount.centerY(inView: commentButton, left: commentButton.rightAnchor, paddingLeft: 8)
+        
+        addSubview(retweetAmount)
+        retweetAmount.centerY(inView: retweetButton, left: retweetButton.rightAnchor, paddingLeft: 8)
+        
+        addSubview(likeAmount)
+        likeAmount.centerY(inView: likeButton, left: likeButton.rightAnchor, paddingLeft: 8)
         
         addSubview(underlineView)
         underlineView.anchor(left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
@@ -151,6 +193,10 @@ class TweetCell: UICollectionViewCell {
         replyLabel.isHidden = viewModel.shouldHideReplyLabel
         replyLabel.text = viewModel.replyText
         
+        likeAmount.text = "\(tweet.likes)"
+        commentAmount.text = "\(tweet.replies)"
+        retweetAmount.text = "\(tweet.retweets)"
+        
     }
     
     private func configureMentionHandler() {
@@ -167,10 +213,18 @@ class TweetCell: UICollectionViewCell {
         return button
     }
     
+    func shouldEnableLikeButton(_ value: Bool) {
+        likeButton.isEnabled = value
+    }
+    
     
     //MARK: - Selectors
     @objc private func handleProfileImageTapped() {
         delegate?.handleProfileImageTapped(self)
+    }
+    
+    @objc private func handleActionSheet() {
+        logger("Handle action button sheet...")
     }
     
     @objc private func handleCommentTapped() {

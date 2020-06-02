@@ -81,7 +81,7 @@ class MainTabController: UITabBarController {
         
         let nav1 = templateNaviationController(image: UIImage(systemName: "house.fill")!, rootViewController: feed)
         let nav2 = templateNaviationController(image: UIImage(systemName: "magnifyingglass")!, rootViewController: explore)
-        let nav3 = templateNaviationController(image: UIImage(systemName: "heart")!, rootViewController: notifications)
+        let nav3 = templateNaviationController(image: UIImage(systemName: "bell")!, rootViewController: notifications)
         let nav4 = templateNaviationController(image: UIImage(systemName: "envelope")!, rootViewController: conversations)
 
         viewControllers = [nav1, nav2, nav3, nav4]

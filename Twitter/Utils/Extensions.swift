@@ -225,6 +225,17 @@ extension UIViewController {
         print("Debug: \(debug)")
     }
     
+    func sizeForText(withText text: String, forWidth width: CGFloat, fontSize size: CGFloat) -> CGSize {
+        let measurementLabel = UILabel()
+        measurementLabel.text = text
+        measurementLabel.numberOfLines = 0
+        measurementLabel.font = UIFont.systemFont(ofSize: size)
+        measurementLabel.lineBreakMode = .byWordWrapping
+        measurementLabel.translatesAutoresizingMaskIntoConstraints = false
+        measurementLabel.widthAnchor.constraint(equalToConstant: width).isActive = true
+        return measurementLabel.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+    }
+    
 }
 
 

@@ -15,17 +15,22 @@ struct TweetService {
     func uploadTweet(caption: String, type: UploadTweetConfiguration, completion: @escaping(DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
+        let time: Int = Int(NSDate().timeIntervalSince1970)
+        let prefixID: String = "\(10000000000 - time)-"
+        
         var values = ["uid": uid,
-                      "timestamp": Int(NSDate().timeIntervalSince1970),
+                      "timestamp": time,
+                      "replies": 0,
                       "likes": 0,
                       "retweets": 0,
                       "caption": caption] as [String : Any]
-        
+ 
         switch type {
             
         case .tweet:
             // childByAutoId() create unique identifier by ramdom
-            kREF_TWEETS.childByAutoId().updateChildValues(values) { (error, ref) in
+            let ID = prefixID + UUID().uuidString
+            kREF_TWEETS.child(ID).updateChildValues(values) { (error, ref) in
                 
                 // update user-tweets structure after tweet upload completes
                 guard let tweetID = ref.key else { return }
@@ -39,12 +44,15 @@ struct TweetService {
         case .reply(let tweet):
             // add replyingTo key incase .reply
             values["replyingTo"] = tweet.user.username
-            
-            kREF_TWEET_REPLIES.child(tweet.tweetID).childByAutoId().updateChildValues(values) { (error, ref) in
+            let ID = prefixID + UUID().uuidString
+            kREF_TWEET_REPLIES.child(tweet.tweetID).child(ID).updateChildValues(values) { (error, ref) in
                 
                 // upload user-replies
                 guard let replyKey = ref.key else { return }
                 kREF_USER_REPLIES.child(uid).updateChildValues([tweet.tweetID: replyKey])
+                
+                // update reply amount
+                kREF_TWEETS.child(tweet.tweetID).updateChildValues(["replies": tweet.replies + 1])
                 
                 //Add notification to database
                 NotificationService.shared.uploadNotification(type: .reply, tweet: tweet)
@@ -106,7 +114,7 @@ struct TweetService {
         var tweets = [Tweet]()
         kREF_USER_LIKES.child(user.uid).observe(.childAdded) { (snapshot) in
             let tweetID = snapshot.key
-            
+            print("Debug: Key is \(tweetID)")
             self.fetchTweet(withTweetID: tweetID) { (tweet) in
                 var likedTweet = tweet
                 likedTweet.isLiked = true

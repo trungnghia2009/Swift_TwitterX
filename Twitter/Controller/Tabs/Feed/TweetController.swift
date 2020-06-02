@@ -100,9 +100,9 @@ extension TweetController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
         let viewModel = TweetViewModel(tweet: tweet)
-        let height = viewModel.size(forWidth: view.frame.width).height
-        
-        return CGSize(width: view.frame.width, height: height + 290)
+        //let height = viewModel.size(forWidth: view.frame.width).height
+        let height = viewModel.sizeForTweetCaption(forWidth: view.frame.width - 32, fontSize: 18).height
+        return CGSize(width: view.frame.width, height: height + 260)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -112,6 +112,12 @@ extension TweetController: UICollectionViewDelegateFlowLayout {
 
 //MARK: - TweetHeaderDelegate
 extension TweetController: TweetHeaderDelegate {
+    func handleLikedUsersTapped(_ header: TweetHeader) {
+        guard let tweetID = header.tweet?.tweetID else { return }
+        let controller = UserListController(tweetID: tweetID, type: .liked, from: .others)
+        navigationController?.pushViewController(controller, animated: true)
+    }
+    
     func handleFetchUser(withUsername username: String) {
         self.logger("Go to user profile for \(username)")
         UserService.shared.fetchUser(withUsername: username) { (user) in

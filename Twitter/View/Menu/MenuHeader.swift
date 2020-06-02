@@ -10,6 +10,8 @@ import UIKit
 
 protocol MenuHeaderDelegate: class {
     func handleProfileImageTapped(_ header: MenuHeader)
+    func handleFollowersTapped(_ header: MenuHeader)
+    func handleFollowingTapped(_ header: MenuHeader)
 }
 
 class MenuHeader: UIView {
@@ -58,7 +60,7 @@ class MenuHeader: UIView {
     
     private lazy var followingLabel: UILabel = {
         let label = UILabel()
-        let followTap = UITapGestureRecognizer(target: self, action: #selector(handleFollowersTapped))
+        let followTap = UITapGestureRecognizer(target: self, action: #selector(handleFollowingTapped))
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(followTap)
         return label
@@ -66,7 +68,7 @@ class MenuHeader: UIView {
     
     private lazy var followersLabel: UILabel = {
         let label = UILabel()
-        let followTap = UITapGestureRecognizer(target: self, action: #selector(handleFollowingTapped))
+        let followTap = UITapGestureRecognizer(target: self, action: #selector(handleFollowersTapped))
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(followTap)
         return label
@@ -120,11 +122,11 @@ class MenuHeader: UIView {
     
     //MARK: - Selectors
     @objc private func handleFollowersTapped() {
-        logger("Handle followers tapped")
+        delegate?.handleFollowersTapped(self)
     }
     
     @objc private func handleFollowingTapped() {
-        logger("Handle following tapped")
+        delegate?.handleFollowingTapped(self)
     }
     
     @objc private func handleProfileImageTapped() {

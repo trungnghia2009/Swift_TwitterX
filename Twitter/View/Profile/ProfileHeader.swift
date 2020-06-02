@@ -13,6 +13,8 @@ protocol ProfileHeaderDelegate: class {
     func handleEditProfileFollow(_ header: ProfileHeader)
     func didSelect(filter: ProfileFilterOptions)
     func showProfileImage(_ header: ProfileHeader)
+    func handleFollowersTapped()
+    func handleFollowingTapped()
 }
 
 class ProfileHeader: UICollectionReusableView {
@@ -57,7 +59,8 @@ class ProfileHeader: UICollectionReusableView {
     lazy var editProfileFollowButton: UIButton = {
         let button = UIButton(type: .system)
         //button.setTitle("Loading", for: .normal)
-        button.setTitleColor(.twitterBlue, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .twitterBlue
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
         button.titleLabel?.textAlignment = .center
         button.layer.borderColor = UIColor.twitterBlue.cgColor
@@ -97,19 +100,19 @@ class ProfileHeader: UICollectionReusableView {
         return view
     }()
     
-    private let followingLabel: UILabel = {
+    private lazy var followingLabel: UILabel = {
         let label = UILabel()
         label.text = "0 Following"
-        let followTap = UITapGestureRecognizer(target: self, action: #selector(handleFollowersTapped))
+        let followTap = UITapGestureRecognizer(target: self, action: #selector(handleFollowingTapped))
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(followTap)
         return label
     }()
     
-    private let followersLabel: UILabel = {
+    private lazy var followersLabel: UILabel = {
         let label = UILabel()
         label.text = "2 Followers"
-        let followTap = UITapGestureRecognizer(target: self, action: #selector(handleFollowingTapped))
+        let followTap = UITapGestureRecognizer(target: self, action: #selector(handleFollowersTapped))
         label.isUserInteractionEnabled = true
         label.addGestureRecognizer(followTap)
         return label
@@ -118,6 +121,11 @@ class ProfileHeader: UICollectionReusableView {
     //MARK: - Lifecycle
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
+        let firstView = UIView(frame: frame)
+        firstView.backgroundColor = .white
+        addSubview(firstView)
+        firstView.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
         
         addSubview(containerView)
         containerView.anchor(top: topAnchor, left: leftAnchor, right: rightAnchor, height: 108)
@@ -196,11 +204,11 @@ class ProfileHeader: UICollectionReusableView {
     }
     
     @objc private func handleFollowersTapped() {
-        
+        delegate?.handleFollowersTapped()
     }
     
     @objc private func handleFollowingTapped() {
-        
+        delegate?.handleFollowingTapped()
     }
     
     @objc private func handleProfileImageTapped() {

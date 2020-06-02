@@ -19,17 +19,21 @@ struct NotificationService {
                             userID: String? = nil) {
         print("Debug: Type is \(type)")
         guard let uid = Auth.auth().currentUser?.uid else { return }
+        let time: Int = Int(NSDate().timeIntervalSince1970)
+        let prefixID: String = "\(10000000000 - time)-"
         
-        var values: [String: Any] = ["timestamp": Int(NSDate().timeIntervalSince1970),
+        var values: [String: Any] = ["timestamp": time,
                                      "uid": uid,
                                      "type": type.rawValue]
+        
+        let ID = prefixID + UUID().uuidString
         
         // Add tweetID key incase having tweet
         if let tweet = tweet {
             values["tweetID"] = tweet.tweetID
-            kREF_NOTIFICATION.child(tweet.user.uid).childByAutoId().updateChildValues(values)
+            kREF_NOTIFICATION.child(tweet.user.uid).child(ID).updateChildValues(values)
         } else if let userID = userID {
-            kREF_NOTIFICATION.child(userID).childByAutoId().updateChildValues(values)
+            kREF_NOTIFICATION.child(userID).child(ID).updateChildValues(values)
         }
     }
     

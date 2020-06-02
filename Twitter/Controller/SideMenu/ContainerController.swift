@@ -132,6 +132,13 @@ class ContainerController: UIViewController {
         self.present(nav, animated: true, completion: nil)
     }
     
+    private func presentUserListController(withUser user: User, withType type: ListType, from: FromOptions) {
+        let controller = UserListController(user: user, type: type, from: from)
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+    }
+
     
     //MARK: - Selectors
     @objc private func dismissMenu() {
@@ -160,6 +167,7 @@ extension ContainerController: MainTabControllerDelegate {
 
 //MARK: - MenuControllerDelegate
 extension ContainerController: MenuControllerDelegate {
+    
     func handleMenuOption(_ controller: MenuController, option: MenuOptions) {
         self.isHideStatusBar = false
         animateMenu(shouldExpand: false) { (_) in
@@ -187,6 +195,17 @@ extension ContainerController: MenuControllerDelegate {
         animateMenu(shouldExpand: false)
         presentProfileController(withUser: header.user)
         
+    }
+    
+    func handleFollowersTapped(_ header: MenuHeader) {
+        animateMenu(shouldExpand: false)
+        presentUserListController(withUser: header.user, withType: .followers, from: .menu)
+        
+    }
+    
+    func handleFollowingTapped(_ header: MenuHeader) {
+        animateMenu(shouldExpand: false)
+        self.presentUserListController(withUser: header.user, withType: .following, from: .menu)
     }
     
     

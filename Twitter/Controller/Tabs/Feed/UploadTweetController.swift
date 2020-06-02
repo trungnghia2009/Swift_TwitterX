@@ -9,9 +9,15 @@
 import UIKit
 import ActiveLabel
 
+protocol UploadTweetControllerDelegate: class {
+    func updateInfo(_ tweetID: String)
+}
+
 class UploadTweetController: UIViewController {
     
     //MARK: - Properties
+    weak var delegate: UploadTweetControllerDelegate?
+    
     private let user: User
     private let config: UploadTweetConfiguration
     private lazy var viewModel = UploadTweetViewModel(config: config)
@@ -130,15 +136,19 @@ class UploadTweetController: UIViewController {
     @objc private func handleUploadTweet() {
         guard captionTextView.text.count > 0 else { return }
         
+        switch config {
+            
+        case .tweet:
+            break
+        case .reply(let tweet):
+            delegate?.updateInfo(tweet.tweetID)
+        }
+        
         TweetService.shared.uploadTweet(caption: captionTextView.text, type: config) { (error, ref) in
             if let error = error {
                 self.showAlert(withMessage: error.localizedDescription)
                 return
             }
-            
-//            if case .reply(let tweet) = self.config {
-//                NotificationService.shared.uploadNotification(type: .reply, tweet: tweet)
-//            }
             
             self.dismiss(animated: true, completion: nil)
             

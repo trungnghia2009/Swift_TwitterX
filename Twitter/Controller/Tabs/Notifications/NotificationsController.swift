@@ -42,8 +42,8 @@ class NotificationsController: UITableViewController {
             self.refreshControl?.endRefreshing()
             self.logger("Notifications count: \(notifications.count)")
             self.isRemoveObserver = true
-            self.notifications = notifications
-            self.checkIfUserIsFollowed(notifications: notifications)
+            self.notifications = notifications.reversed()
+            self.checkIfUserIsFollowed(notifications: self.notifications)
             
         }
     }
@@ -64,7 +64,7 @@ class NotificationsController: UITableViewController {
     }
     
     private func checkIfUserIsFollowed(notifications: [Notification]) {
-        guard notifications.count == 0 else {
+        guard notifications.count != 0 else {
             logger("There is no notifications")
             return
         }

@@ -69,8 +69,6 @@ class FeedController: UICollectionViewController {
         collectionView.refreshControl?.beginRefreshing()
         TweetService.shared.fetchTweetsFollowing { (tweets) in
             self.collectionView.refreshControl?.endRefreshing()
-            self.logger("Tweets count: \(tweets.count)")
-            
             self.tweets = tweets.sorted(by: { $0.timestamp > $1.timestamp })
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
                self.checkIfUserLikedTweets()
@@ -83,7 +81,6 @@ class FeedController: UICollectionViewController {
         self.tweets.forEach { (tweet) in
             TweetService.shared.checkIfUserLikedTweet(tweet: tweet) { (bool) in
                 if bool == false { return }
-                self.logger("User: \(tweet.user.username)")
                 if let index = self.tweets.firstIndex(where: { $0.tweetID == tweet.tweetID }) {
                     self.tweets[index].isLiked = true
                 }
@@ -177,7 +174,7 @@ extension FeedController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         let viewModel = TweetViewModel(tweet: tweets[indexPath.row])
-        let height = viewModel.size(forWidth: view.frame.width).height
+        let height = viewModel.sizeForTweetCaption(forWidth: view.frame.width - 80, fontSize: 14).height
         
         return CGSize(width: view.frame.width, height: height + 72)
     }
@@ -195,6 +192,8 @@ extension FeedController: TweetCellDelegate {
     
     func handleLikeTapped(_ cell: TweetCell) {
         guard let tweet = cell.tweet else { return }
+        let tweetID = tweet.tweetID
+        cell.shouldEnableLikeButton(false)
         
         TweetService.shared.likeTweet(tweet: tweet) { (error, ref) in
             if let error = error {
@@ -202,22 +201,29 @@ extension FeedController: TweetCellDelegate {
                 return
             }
             
-            //Update object after Api call
             let likes = tweet.isLiked ? tweet.likes - 1 : tweet.likes + 1
-            cell.tweet?.likes = likes
             
-            //Only upload notification if tweet is being liked
-            if !tweet.isLiked {
-                NotificationService.shared.uploadNotification(type: .like, tweet: tweet)
+            for (index, tweet) in self.tweets.enumerated() {
+                if tweet.tweetID == tweetID {
+                    
+                    //Only upload notification if tweet is being liked
+                    if !tweet.isLiked {
+                        NotificationService.shared.uploadNotification(type: .like, tweet: tweet)
+                    }
+                    
+                    //Update object after Api call
+                    self.tweets[index].likes = likes
+                    self.tweets[index].isLiked.toggle()
+                    cell.shouldEnableLikeButton(true)
+                }
             }
-            
-            cell.tweet?.isLiked.toggle()
         }
     }
     
     func handleReplyTapped(_ cell: TweetCell) {
         guard let tweet = cell.tweet else { return }
         let controller = UploadTweetController(user: tweet.user, config: .reply(tweet))
+        controller.delegate = self
         let nav = UINavigationController(rootViewController: controller)
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true, completion: nil)
@@ -241,3 +247,15 @@ extension FeedController: TabBarReselectHandling {
     
 }
 
+//MARK: - UploadTweetControllerDelegate
+extension FeedController: UploadTweetControllerDelegate {
+    func updateInfo(_ tweetID: String) {
+        for (index, tweet) in self.tweets.enumerated() {
+            if tweet.tweetID == tweetID {
+                self.tweets[index].replies += 1
+                return
+            }
+        }
+    }
+    
+}
