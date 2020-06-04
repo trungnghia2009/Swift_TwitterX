@@ -9,6 +9,8 @@
 import UIKit
 import JGProgressHUD
 
+typealias AlertAction = ((UIAlertAction) -> Void)?
+
 extension UIView {
     func anchor(top: NSLayoutYAxisAnchor? = nil,
                 left: NSLayoutXAxisAnchor? = nil,
@@ -236,6 +238,134 @@ extension UIViewController {
         return measurementLabel.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
     }
     
+    func shouldHideActionButton(_ value: Bool) {
+        if let tabBarController = self.tabBarController as? MainTabController {
+            tabBarController.actionButton.isHidden = value
+        }
+    }
+    
+    func didSelectRetweet(_ retweet: AlertAction,
+                          _ retweetWithComment: AlertAction ) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alertController.view.tintColor = .black
+        
+        let retweetAction = UIAlertAction(title: "Retweet", style: .default, handler: retweet)
+        retweetAction.setValue(UIImage(systemName: "repeat"), forKey: "image")
+        retweetAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+    
+        let retweetWithCommentAction = UIAlertAction(title: "Retweet with comment", style: .default, handler: retweetWithComment)
+        retweetWithCommentAction.setValue(UIImage(systemName: "square.and.pencil"), forKey: "image")
+        retweetWithCommentAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        alertController.addAction(retweetAction)
+        alertController.addAction(retweetWithCommentAction)
+        
+        presentAlert(alertController: alertController)
+    }
+    
+    func didSelectTweetActionButton(forUsername username: String,
+                                    _ notInterested: AlertAction,
+                                    _ unfollow: AlertAction,
+                                    _ mute: AlertAction,
+                                    _ block: AlertAction,
+                                    _ report: AlertAction ) {
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alertController.view.tintColor = .black
+        
+        let notInterestedAction = UIAlertAction(title: "Not interested in this", style: .default, handler: notInterested)
+        notInterestedAction.setValue(UIImage(systemName: "hand.thumbsdown"), forKey: "image")
+        notInterestedAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        let unfollowAction = UIAlertAction(title: "Unfollow @\(username)", style: .default, handler: unfollow)
+        unfollowAction.setValue(UIImage(systemName: "person.crop.circle.badge.xmark"), forKey: "image")
+        unfollowAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        let muteAction = UIAlertAction(title: "Mute @\(username)", style: .default, handler: mute)
+        muteAction.setValue(UIImage(systemName: "xmark"), forKey: "image")
+        muteAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        let blockAction = UIAlertAction(title: "Block @\(username)", style: .default, handler: block)
+        blockAction.setValue(UIImage(systemName: "lock"), forKey: "image")
+        blockAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        let reportAction = UIAlertAction(title: "Report Tweet", style: .default, handler: report)
+        reportAction.setValue(UIImage(systemName: "flag"), forKey: "image")
+        reportAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        alertController.addAction(notInterestedAction)
+        alertController.addAction(unfollowAction)
+        alertController.addAction(muteAction)
+        alertController.addAction(blockAction)
+        alertController.addAction(reportAction)
+        
+        presentAlert(alertController: alertController)
+    }
+    
+    func didSelectUserTweetAction(_ pinToProfile: AlertAction,
+                                  _ deleteTweet: AlertAction) {
+        
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        alertController.view.tintColor = .black
+        
+        let pinToProfiledAction = UIAlertAction(title: "Pin to profile", style: .default, handler: pinToProfile)
+        pinToProfiledAction.setValue(UIImage(systemName: "pin"), forKey: "image")
+        pinToProfiledAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        let deleteTweetAction = UIAlertAction(title: "Delete Tweet", style: .default, handler: pinToProfile)
+        deleteTweetAction.setValue(UIImage(systemName: "trash"), forKey: "image")
+        deleteTweetAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        alertController.addAction(pinToProfiledAction)
+        alertController.addAction(deleteTweetAction)
+        
+        presentAlert(alertController: alertController)
+    }
+    
+    func didSelectShareTweetAction(_ sendViaDirectionMessage: AlertAction,
+                                   _ addToBookmarks: AlertAction,
+                                   _ copyLinkToTweet: AlertAction,
+                                   _ shareTweetVia: AlertAction ) {
+        
+        let alertController = UIAlertController(title: "Share Tweet", message: nil, preferredStyle: .actionSheet)
+        alertController.view.tintColor = .black
+        alertController.setTitleFontSize(size: 20)
+        
+        let sendViaDirectionMessageAction = UIAlertAction(title: "Send via Direct Message", style: .default, handler: sendViaDirectionMessage)
+        sendViaDirectionMessageAction.setValue(UIImage(systemName: "envelope"), forKey: "image")
+        sendViaDirectionMessageAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        let addToBookmarksMessageAction = UIAlertAction(title: "Add Tweet to Booknarks", style: .default, handler: addToBookmarks)
+        addToBookmarksMessageAction.setValue(UIImage(systemName: "bookmark"), forKey: "image")
+        addToBookmarksMessageAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        let copyLinkToTweetMessageAction = UIAlertAction(title: "Copy link to Tweet", style: .default, handler: copyLinkToTweet)
+        copyLinkToTweetMessageAction.setValue(UIImage(systemName: "doc.on.doc"), forKey: "image")
+        copyLinkToTweetMessageAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        let shareTweetViaAction = UIAlertAction(title: "Share Tweet via...", style: .default, handler: shareTweetVia)
+        shareTweetViaAction.setValue(UIImage(named: "share")?.withRenderingMode(.alwaysOriginal), forKey: "image")
+        shareTweetViaAction.setValue(CATextLayerAlignmentMode.left, forKey: "titleTextAlignment")
+        
+        alertController.addAction(sendViaDirectionMessageAction)
+        alertController.addAction(addToBookmarksMessageAction)
+        alertController.addAction(copyLinkToTweetMessageAction)
+        alertController.addAction(shareTweetViaAction)
+        
+        presentAlert(alertController: alertController)
+    }
+    
+    private func presentAlert(alertController: UIAlertController) {
+        present(alertController, animated: true) {
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissAlertController))
+            alertController.view.superview?.subviews[0].addGestureRecognizer(tapGesture)
+        }
+    }
+    
+    @objc private func dismissAlertController(){
+        self.dismiss(animated: true, completion: nil)
+    }
+    
 }
 
 
@@ -277,5 +407,24 @@ extension UITableView {
 
     func restore() {
         self.backgroundView = nil
+    }
+}
+
+extension UIAlertController {
+    func setTitleFontSize(size: CGFloat?) {
+        guard let title = self.title else { return }
+        let attributeString = NSMutableAttributedString(string: title)
+        
+        if let size = size {
+            attributeString.addAttributes([.font: UIFont.boldSystemFont(ofSize: size)],
+                                          range: NSMakeRange(0, title.utf8.count))
+        }
+        self.setValue(attributeString, forKey: "attributedTitle")
+    }
+    
+    func setBackgroundColor(color: UIColor) {
+        if let bgView = self.view.subviews.first, let groupView = bgView.subviews.first, let contentView = groupView.subviews.first {
+            contentView.backgroundColor = color
+        }
     }
 }

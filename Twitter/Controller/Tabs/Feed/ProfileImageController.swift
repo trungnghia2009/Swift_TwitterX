@@ -59,6 +59,7 @@ class ProfileImageController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        shouldHideActionButton(true)
         
         view.addSubview(profileImageView)
         profileImageView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
@@ -81,6 +82,11 @@ class ProfileImageController: UIViewController {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.barStyle = .default
         navigationController?.navigationBar.isHidden = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        shouldHideActionButton(false)
     }
     
     

@@ -10,9 +10,15 @@ import UIKit
 
 private let reuseIdentifier = "NotificationCell"
 
+protocol NotificationsControllerDelegate: class {
+    func didFetchNotifications(_ controller: NotificationsController)
+}
+
 class NotificationsController: UITableViewController {
 
     //MARK: - Properties
+    weak var delegate: NotificationsControllerDelegate?
+    
     var isRemoveObserver = false
     
     private var notifications = [Notification]() {
@@ -32,6 +38,13 @@ class NotificationsController: UITableViewController {
         navigationController?.navigationBar.barStyle = .default
         navigationController?.navigationBar.isHidden = false
         tabBarController?.tabBar.isHidden = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationService.shared.getNumberOfNotifications { (count) in
+            self.tabBarController?.tabBar.items![2].badgeValue = count != 0 ? "\(count)" : nil
+        }
     }
 
     
@@ -107,9 +120,11 @@ extension NotificationsController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if notifications.count == 0 {
             logger("isRemoveObserver is \(isRemoveObserver)")
+            navigationItem.rightBarButtonItem?.isEnabled = false
             if isRemoveObserver { NotificationService.shared.removeNotificationObserver() }
             tableView.setEmptyMessage("There is no notifications \nPlease come back to check later!")
         } else {
+            navigationItem.rightBarButtonItem?.isEnabled = true
             tableView.restore()
         }
         

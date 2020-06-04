@@ -21,6 +21,8 @@ struct Tweet {
     
     var isReply: Bool { return replyingTo != nil }
     
+    var retweetedBy: String? //assigned base on UID
+    
     init(user: User, tweetID: String, dictionary: [String: Any]) {
         self.tweetID = tweetID
         self.user = user

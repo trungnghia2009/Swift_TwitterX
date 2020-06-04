@@ -14,6 +14,11 @@ protocol TweetHeaderDelegate: class {
     func handleProfileImageTapped(_ header: TweetHeader)
     func handleFetchUser(withUsername username: String)
     func handleLikedUsersTapped(_ header: TweetHeader)
+    
+    func handleCommentTapped(_ header: TweetHeader)
+    func handleRetweetTapped(_ header: TweetHeader)
+    func handleLikeTapped(_ header: TweetHeader)
+    func handleShareTapped( _ header: TweetHeader)
 }
 
 class TweetHeader: UICollectionReusableView {
@@ -286,18 +291,18 @@ class TweetHeader: UICollectionReusableView {
     }
     
     @objc private func handleCommentTapped() {
-        print("Debug: Handle Comment tapped here..")
+        delegate?.handleCommentTapped(self)
     }
     
     @objc private func handleRetweetTapped() {
-        print("Debug: Handle Retweet tapped here..")
+        delegate?.handleRetweetTapped(self)
     }
     
     @objc private func handleLikeTapped() {
-        print("Debug: Handle Like tapped here..")
+        delegate?.handleLikeTapped(self)
     }
     
     @objc private func handleShareTapped() {
-        print("Debug: Handle Share tapped here..")
+        delegate?.handleShareTapped(self)
     }
 }

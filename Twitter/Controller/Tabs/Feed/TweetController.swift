@@ -38,9 +38,15 @@ class TweetController: UICollectionViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        shouldHideActionButton(true)
         navigationController?.navigationBar.barStyle = .default
         navigationController?.navigationBar.isHidden = false
         tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        shouldHideActionButton(false)
     }
     
     
@@ -112,6 +118,42 @@ extension TweetController: UICollectionViewDelegateFlowLayout {
 
 //MARK: - TweetHeaderDelegate
 extension TweetController: TweetHeaderDelegate {
+    func handleShareTapped(_ header: TweetHeader) {
+        guard let tweet = header.tweet else { return }
+        let shareContent = "From \(tweet.user.username) \n\(tweet.caption)"
+        
+        didSelectShareTweetAction({ (_) in
+            self.logger("Handle Send via Direct message")
+        }, { (_) in
+            self.logger("Handle Add tweet to bookmarks")
+        }, { (_) in
+            self.logger("Handle Copy link to tweet")
+        }) { (_) in
+            UIApplication.share(shareContent)
+        }
+    }
+    
+    func handleCommentTapped(_ header: TweetHeader) {
+        guard let tweet = header.tweet else { return }
+        let controller = UploadTweetController(user: tweet.user, config: .reply(tweet))
+        controller.delegate = self
+        let nav = UINavigationController(rootViewController: controller)
+        nav.modalPresentationStyle = .fullScreen
+        present(nav, animated: true, completion: nil)
+    }
+    
+    func handleRetweetTapped(_ header: TweetHeader) {
+        didSelectRetweet({ (_) in
+            //TODO:
+        }) { (_) in
+            //TODO:
+        }
+    }
+    
+    func handleLikeTapped(_ header: TweetHeader) {
+        logger("Handle like..")
+    }
+    
     func handleLikedUsersTapped(_ header: TweetHeader) {
         guard let tweetID = header.tweet?.tweetID else { return }
         let controller = UserListController(tweetID: tweetID, type: .liked, from: .others)
@@ -177,5 +219,13 @@ extension TweetController: ActionSheetLauncherDelegate {
         }
     }
     
+    
+}
+
+
+//MARK: - UploadTweetControllerDelegate
+extension TweetController: UploadTweetControllerDelegate {
+    func updateInfo(_ tweetID: String) {
+    }
     
 }

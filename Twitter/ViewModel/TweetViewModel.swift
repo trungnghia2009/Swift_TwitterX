@@ -59,6 +59,10 @@ struct TweetViewModel {
         return UIImage(named: imageName)!
     }
     
+    var likeAmountColor: UIColor {
+        return tweet.isLiked ? .red : .black
+    }
+    
     var shouldHideReplyLabel: Bool {
         return !tweet.isReply
     }

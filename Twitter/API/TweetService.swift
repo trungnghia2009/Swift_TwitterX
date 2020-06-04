@@ -176,6 +176,12 @@ struct TweetService {
             let tweetKey = snapshot.key
             guard let replyKey = snapshot.value as? String else { return }
             
+            if replyKey.contains("retweet") {
+                
+            } else {
+                
+            }
+            
             kREF_TWEET_REPLIES.child(tweetKey).child(replyKey).observeSingleEvent(of: .value) { (snapshot) in
                 guard let dictionary = snapshot.value as? [String: Any] else { return }
                 guard let uid = dictionary["uid"] as? String else { return }
@@ -224,6 +230,18 @@ struct TweetService {
             completion(snapshot.exists())
         }
         
+    }
+    
+    func retweetWithOutComment(tweet: Tweet, completion: @escaping() -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let prefix = tweet.tweetID.components(separatedBy: "-")[0]
+        let newPrefix = String(Int(tweet.tweetID.components(separatedBy: "-")[0])! - 1)
+
+        let retweetID = tweet.tweetID.replacingOccurrences(of: prefix, with: newPrefix, options: .literal, range: nil) + "-retweet"
+        
+        kREF_USER_TWEETS.child(uid).updateChildValues([retweetID: 1])
+        kREF_USER_REPLIES.child(uid).updateChildValues([retweetID: tweet.tweetID])
+        kREF_TWEET_RETWEETS.child(tweet.tweetID).updateChildValues([uid: 1])
     }
     
     

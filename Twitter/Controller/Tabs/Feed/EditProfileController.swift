@@ -46,7 +46,7 @@ class EditProfileController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        dismissKeyboardIfTappingOutside()
         configureImagePicker()
         configureNavigationBar()
         configureTableView()
@@ -65,6 +65,7 @@ class EditProfileController: UITableViewController {
         navigationController?.navigationBar.tintColor = .white
         
         navigationItem.title = "Edit Profile"
+        navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(handleSave))
         navigationItem.rightBarButtonItem?.isEnabled = false

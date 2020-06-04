@@ -11,12 +11,14 @@ import UIKit
 enum ProfileFilterOptions: Int, CaseIterable, CustomStringConvertible {
     case tweets
     case replies
+    case media
     case likes
     
     var description: String {
         switch self {
         case .tweets: return "Tweets"
-        case .replies: return "Tweets & Replies"
+        case .replies: return "Replies"
+        case .media: return "Media"
         case .likes: return "Likes"
         }
     }

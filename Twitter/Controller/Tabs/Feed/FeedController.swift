@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 private let reuseIdentifier = "TweetCell"
 
@@ -49,18 +50,6 @@ class FeedController: UICollectionViewController {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
-    
-    
-//    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//        if scrollView.panGestureRecognizer.translation(in: scrollView).y < 0 {
-//            navigationController?.setNavigationBarHidden(true, animated: true)
-//
-//        } else {
-//            navigationController?.setNavigationBarHidden(false, animated: true)
-//            isHideStatusBar = false
-//        }
-//    }
-    
     
     //MARK: - API
     private func fetchTweetsFollowing() {
@@ -182,6 +171,59 @@ extension FeedController: UICollectionViewDelegateFlowLayout {
 
 //MARK: - TweetCellDelegate
 extension FeedController: TweetCellDelegate {
+    func handleShareTapped(_ cell: TweetCell) {
+        guard let tweet = cell.tweet else { return }
+        let shareContent = "From \(tweet.user.username) \n\(tweet.caption)"
+        
+        didSelectShareTweetAction({ (_) in
+            self.logger("Handle Send via Direct message")
+        }, { (_) in
+            self.logger("Handle Add tweet to bookmarks")
+        }, { (_) in
+            self.logger("Handle Copy link to tweet")
+        }) { (_) in
+            UIApplication.share(shareContent)
+        }
+        
+        
+       
+    }
+    
+    func handleActionSheet(_ cell: TweetCell) {
+        guard let username = cell.tweet?.user.username else { return }
+        guard let uid = cell.tweet?.user.uid else { return }
+        
+        if Auth.auth().currentUser?.uid != uid {
+            didSelectTweetActionButton(forUsername: username, { (_) in
+                self.logger("Handle Not interested..")
+            }, { (_) in
+                self.logger("Handle Unfollow..")
+            }, { (_) in
+                self.logger("Handle Mute..")
+            }, { (_) in
+                self.logger("Handle Block..")
+            }) { (_) in
+                self.logger("Handle Report..")
+            }
+        } else {
+            didSelectUserTweetAction({ (_) in
+                self.logger("Handle Pin to profile")
+            }) { (_) in
+                self.logger("Handle delele tweet")
+            }
+        }
+
+    }
+    
+    func handleRetweetTapped(_ cell: TweetCell) {
+        didSelectRetweet({ (_) in
+            self.logger("Retweet..")
+        }) { (_) in
+            self.logger("Retweet with comment..")
+        }
+    
+    }
+    
     func handleFetchUser(withUsername username: String) {
         self.logger("Go to user profile for \(username)")
         UserService.shared.fetchUser(withUsername: username) { (user) in
@@ -258,4 +300,35 @@ extension FeedController: UploadTweetControllerDelegate {
         }
     }
     
+}
+
+extension UIApplication {
+    class var topViewController: UIViewController? { return getTopViewController() }
+    private class func getTopViewController(base: UIViewController? = UIApplication.shared.windows.filter { $0.isKeyWindow}.first?.rootViewController) -> UIViewController? {
+        if let nav = base as? UINavigationController { return getTopViewController(base: nav.visibleViewController) }
+        if let tab = base as? UITabBarController {
+            if let selected = tab.selectedViewController { return getTopViewController(base: selected) }
+        }
+        if let presented = base?.presentedViewController { return getTopViewController(base: presented) }
+        return base
+    }
+
+    private class func _share(_ data: [Any],
+                              applicationActivities: [UIActivity]?,
+                              setupViewControllerCompletion: ((UIActivityViewController) -> Void)?) {
+        let activityViewController = UIActivityViewController(activityItems: data, applicationActivities: nil)
+        setupViewControllerCompletion?(activityViewController)
+        UIApplication.topViewController?.present(activityViewController, animated: true, completion: nil)
+    }
+
+    class func share(_ data: Any...,
+                     applicationActivities: [UIActivity]? = nil,
+                     setupViewControllerCompletion: ((UIActivityViewController) -> Void)? = nil) {
+        _share(data, applicationActivities: applicationActivities, setupViewControllerCompletion: setupViewControllerCompletion)
+    }
+    class func share(_ data: [Any],
+                     applicationActivities: [UIActivity]? = nil,
+                     setupViewControllerCompletion: ((UIActivityViewController) -> Void)? = nil) {
+        _share(data, applicationActivities: applicationActivities, setupViewControllerCompletion: setupViewControllerCompletion)
+    }
 }

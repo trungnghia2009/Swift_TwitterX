@@ -40,6 +40,9 @@ class ProfileController: UICollectionViewController {
             return replies
         case .likes:
             return likedTweets
+        case .media:
+            //FIXME: Need to deploy later
+            return []
         }
     }
     
@@ -239,7 +242,7 @@ extension ProfileController: ProfileHeaderDelegate {
             let controller = EditProfileController(user: user)
             controller.delegate = self
             let nav = UINavigationController(rootViewController: controller)
-            nav.modalPresentationStyle = .fullScreen
+            nav.modalPresentationStyle = .automatic
             present(nav, animated: true, completion: nil)
             return
         }

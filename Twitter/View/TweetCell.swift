@@ -13,7 +13,10 @@ protocol TweetCellDelegate: class {
     func handleProfileImageTapped(_ cell: TweetCell)
     func handleReplyTapped(_ cell: TweetCell)
     func handleLikeTapped(_ cell: TweetCell)
+    func handleShareTapped(_ cell: TweetCell)
+    func handleRetweetTapped(_ cell: TweetCell)
     func handleFetchUser(withUsername username: String)
+    func handleActionSheet(_ cell: TweetCell)
 }
 
 class TweetCell: UICollectionViewCell {
@@ -63,6 +66,7 @@ class TweetCell: UICollectionViewCell {
         let button = UIButton(type: .system)
         button.tintColor = .lightGray
         button.setImage(#imageLiteral(resourceName: "down_arrow_24pt"), for: .normal)
+        button.setDimensions(width: 40, height: 30)
         button.addTarget(self, action: #selector(handleActionSheet), for: .touchUpInside)
         return button
     }()
@@ -145,7 +149,7 @@ class TweetCell: UICollectionViewCell {
         
         addSubview(optionButon)
         optionButon.centerY(inView: infoLabel)
-        optionButon.anchor(right: rightAnchor, paddingRight: 8)
+        optionButon.anchor(right: rightAnchor, paddingRight: 0)
         
         let actionStack = UIStackView(arrangedSubviews: [commentButton,
                                                          retweetButton,
@@ -158,13 +162,13 @@ class TweetCell: UICollectionViewCell {
         actionStack.anchor(left: stack.leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingBottom: 8, paddingRight: 48)
         
         addSubview(commentAmount)
-        commentAmount.centerY(inView: commentButton, left: commentButton.rightAnchor, paddingLeft: 8)
+        commentAmount.centerY(inView: commentButton, left: commentButton.rightAnchor, paddingLeft: -5)
         
         addSubview(retweetAmount)
-        retweetAmount.centerY(inView: retweetButton, left: retweetButton.rightAnchor, paddingLeft: 8)
+        retweetAmount.centerY(inView: retweetButton, left: retweetButton.rightAnchor, paddingLeft: -5)
         
         addSubview(likeAmount)
-        likeAmount.centerY(inView: likeButton, left: likeButton.rightAnchor, paddingLeft: 8)
+        likeAmount.centerY(inView: likeButton, left: likeButton.rightAnchor, paddingLeft: -5)
         
         addSubview(underlineView)
         underlineView.anchor(left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
@@ -194,6 +198,7 @@ class TweetCell: UICollectionViewCell {
         replyLabel.text = viewModel.replyText
         
         likeAmount.text = "\(tweet.likes)"
+        likeAmount.textColor = viewModel.likeAmountColor
         commentAmount.text = "\(tweet.replies)"
         retweetAmount.text = "\(tweet.retweets)"
         
@@ -209,7 +214,7 @@ class TweetCell: UICollectionViewCell {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: imageName), for: .normal)
         button.tintColor = .darkGray
-        button.setDimensions(width: 20, height: 20)
+        button.setDimensions(width: 50, height: 20)
         return button
     }
     
@@ -224,7 +229,7 @@ class TweetCell: UICollectionViewCell {
     }
     
     @objc private func handleActionSheet() {
-        logger("Handle action button sheet...")
+        delegate?.handleActionSheet(self)
     }
     
     @objc private func handleCommentTapped() {
@@ -232,7 +237,7 @@ class TweetCell: UICollectionViewCell {
     }
     
     @objc private func handleRetweetTapped() {
-        logger("Handle retweet tapped...")
+        delegate?.handleRetweetTapped(self)
     }
     
     @objc private func handleLikeTapped() {
@@ -240,7 +245,7 @@ class TweetCell: UICollectionViewCell {
     }
     
     @objc private func handleShareTapped() {
-        logger("Handle share tapped...")
+        delegate?.handleShareTapped(self)
     }
     
 }

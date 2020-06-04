@@ -78,7 +78,7 @@ class ActionSheetLauncher: NSObject {
         
         window.addSubview(tableView)
         
-        tableView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: tableViewHeight)
+        tableView.frame = CGRect(x: 0, y: window.frame.height, width: window.frame.width, height: tableViewHeight + 10)
         
         UIView.animate(withDuration: 0.3) {
             self.blackView.alpha = 1
@@ -92,7 +92,7 @@ class ActionSheetLauncher: NSObject {
         
         tableView.rowHeight = 60
         tableView.separatorStyle = .none
-        tableView.layer.cornerRadius = 5
+        tableView.layer.cornerRadius = 10
         tableView.isScrollEnabled = false
         
         tableView.register(ActionSheetCell.self, forCellReuseIdentifier: reuseIdentifier)

@@ -60,11 +60,16 @@ class MainTabController: UITabBarController {
         super.viewDidLoad()
         configureViewControllers()
         configureUI()
+        fetchNotifications()
     }
     
     
     //MARK: - API
-    
+    private func fetchNotifications() {
+        NotificationService.shared.getNumberOfNotifications { (count) in
+            self.tabBar.items![2].badgeValue = count != 0 ? "\(count)" : nil
+        }
+    }
     
     //MARK: - Helpers
     private func configureUI() {
@@ -85,7 +90,6 @@ class MainTabController: UITabBarController {
         let nav4 = templateNaviationController(image: UIImage(systemName: "envelope")!, rootViewController: conversations)
 
         viewControllers = [nav1, nav2, nav3, nav4]
-        tabBar.items![2].badgeValue = "3"
     }
     
     private func templateNaviationController(image: UIImage, rootViewController: UIViewController) -> UINavigationController {
@@ -130,6 +134,7 @@ extension MainTabController: UITabBarControllerDelegate {
         
         if index == 2 {
             notifications.fetchNotifications()
+            tabBar.items![2].badgeValue = nil
         }
         
     }

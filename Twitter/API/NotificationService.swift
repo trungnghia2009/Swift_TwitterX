@@ -63,6 +63,13 @@ struct NotificationService {
         }
     }
     
+    func getNumberOfNotifications(completion: @escaping (UInt) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        kREF_NOTIFICATION.child(uid).observe(.value) { (snapshot) in
+            completion(snapshot.childrenCount)
+        }
+    }
+    
     func removeNotification(notificationID: String, completion: @escaping (DatabaseCompletion)) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         kREF_NOTIFICATION.child(uid).child(notificationID).removeValue(completionBlock: completion)

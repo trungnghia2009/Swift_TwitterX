@@ -177,6 +177,9 @@ extension ContainerController: MenuControllerDelegate {
                 self.presentProfileController(withUser: controller.user)
             case .lists:
                 self.logger("tapped lists")
+                guard let user = self.user else { return }
+                let controller = ProfileController(user: user)
+                self.navigationController?.pushViewController(controller, animated: true)
             case .logout:
                 let alertController = UIAlertController(title: nil, message: "Are you sure you want to log out ?", preferredStyle: .actionSheet)
                 alertController.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { (_) in
