@@ -12,7 +12,7 @@ import Firebase
 private let reuseIdentifier = "TweetCell"
 
 protocol FeedControllerDelegate: class {
-    func handleProfileImageTapped(_ controller: FeedController)
+    func handleProfileImageTappedForFeed()
 }
 
 class FeedController: UICollectionViewController {
@@ -20,10 +20,10 @@ class FeedController: UICollectionViewController {
     //MARK: - Properties
     weak var delegate: FeedControllerDelegate?
     
-    private let profileImageView = UIImageView()
+    private let profileImageView = CustomProfileImageView(frame: .zero)
     
     var user: User? {
-        didSet { configureLeftBarButton() }
+        didSet { profileImageView.user = user }
     }
     
     private var tweets = [Tweet]() {
@@ -37,6 +37,10 @@ class FeedController: UICollectionViewController {
         super.viewDidLoad()
         configureUI()
         fetchTweetsFollowing()
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return false
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -80,6 +84,14 @@ class FeedController: UICollectionViewController {
     
     //MARK: - Helpers
     private func configureUI() {
+        profileImageView.delegate = self
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "icons8-settings-80"), style: .plain, target: self, action: #selector(handleRightBarTapped))
+        
+        let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe))
+        rightSwipe.direction = .right
+        view.addGestureRecognizer(rightSwipe)
+        
         view.backgroundColor = .white
         
         //Register cell
@@ -96,38 +108,29 @@ class FeedController: UICollectionViewController {
         imageView.isUserInteractionEnabled = true
         navigationItem.titleView = imageView
         
-        profileImageView.backgroundColor = .white
-        profileImageView.setDimensions(width: 32, height: 32)
-        profileImageView.layer.cornerRadius = 16
-        profileImageView.clipsToBounds = true
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
-        
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(handleRefresh), for: .valueChanged)
         collectionView.refreshControl = refreshControl
     }
     
-    private func configureLeftBarButton() {
-        guard let user = user else { return }
-        let url = URL(string: user.profileImageUrl)
-        logger("Print \(user.profileImageUrl)")
-        profileImageView.sd_setImage(with: url)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(handleLeftBarButtonTapped))
-        profileImageView.addGestureRecognizer(tap)
-    }
-    
     
     //MARK: - Selectors
-    @objc private func handleLeftBarButtonTapped() {
-        delegate?.handleProfileImageTapped(self)
-    }
-    
     @objc private func handleRefresh() {
         fetchTweetsFollowing()
     }
     
     @objc private func handleTweetLogoTapped() {
         collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+    }
+    
+    @objc private func handleRightSwipe(sender: UISwipeGestureRecognizer) {
+        if sender.direction == .right {
+            delegate?.handleProfileImageTappedForFeed()
+        }
+    }
+    
+    @objc private func handleRightBarTapped() {
+        logger("Handle right bar tapped..")
     }
 
 }
@@ -168,6 +171,14 @@ extension FeedController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: view.frame.width, height: height + 72)
     }
 }
+ 
+//MARK: - CustomProfileImageViewDelegate
+extension FeedController: CustomProfileImageViewDelegate {
+    func handleProfileImageTapped() {
+        delegate?.handleProfileImageTappedForFeed()
+    }
+    
+}
 
 //MARK: - TweetCellDelegate
 extension FeedController: TweetCellDelegate {
@@ -184,9 +195,6 @@ extension FeedController: TweetCellDelegate {
         }) { (_) in
             UIApplication.share(shareContent)
         }
-        
-        
-       
     }
     
     func handleActionSheet(_ cell: TweetCell) {
@@ -302,33 +310,3 @@ extension FeedController: UploadTweetControllerDelegate {
     
 }
 
-extension UIApplication {
-    class var topViewController: UIViewController? { return getTopViewController() }
-    private class func getTopViewController(base: UIViewController? = UIApplication.shared.windows.filter { $0.isKeyWindow}.first?.rootViewController) -> UIViewController? {
-        if let nav = base as? UINavigationController { return getTopViewController(base: nav.visibleViewController) }
-        if let tab = base as? UITabBarController {
-            if let selected = tab.selectedViewController { return getTopViewController(base: selected) }
-        }
-        if let presented = base?.presentedViewController { return getTopViewController(base: presented) }
-        return base
-    }
-
-    private class func _share(_ data: [Any],
-                              applicationActivities: [UIActivity]?,
-                              setupViewControllerCompletion: ((UIActivityViewController) -> Void)?) {
-        let activityViewController = UIActivityViewController(activityItems: data, applicationActivities: nil)
-        setupViewControllerCompletion?(activityViewController)
-        UIApplication.topViewController?.present(activityViewController, animated: true, completion: nil)
-    }
-
-    class func share(_ data: Any...,
-                     applicationActivities: [UIActivity]? = nil,
-                     setupViewControllerCompletion: ((UIActivityViewController) -> Void)? = nil) {
-        _share(data, applicationActivities: applicationActivities, setupViewControllerCompletion: setupViewControllerCompletion)
-    }
-    class func share(_ data: [Any],
-                     applicationActivities: [UIActivity]? = nil,
-                     setupViewControllerCompletion: ((UIActivityViewController) -> Void)? = nil) {
-        _share(data, applicationActivities: applicationActivities, setupViewControllerCompletion: setupViewControllerCompletion)
-    }
-}

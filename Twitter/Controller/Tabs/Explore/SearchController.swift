@@ -15,9 +15,21 @@ enum SearchControllerConfiguration {
     case userSearch
 }
 
+protocol SearchControllerDelegate: class {
+    func handleProfileImageTappedForExplore()
+}
+
 class SearchController: UITableViewController {
 
     //MARK: - Properties
+    weak var delegate: SearchControllerDelegate?
+    
+    private let profileImageView = CustomProfileImageView(frame: .zero)
+    
+    var user: User? {
+        didSet { profileImageView.user = user }
+    }
+    
     private let config: SearchControllerConfiguration
     
     private var users = [User]() {
@@ -65,12 +77,30 @@ class SearchController: UITableViewController {
         logger("Call API for fetching all users..")
         UserService.shared.fetchUsers { (users) in
             self.users = users
+            
+            //Remove current UI if being in messages
+            if self.config == .messages {
+                for (index, user) in self.users.enumerated() {
+                    if user.uid == AuthService.shared.currentUid {
+                        self.users.remove(at: index)
+                    }
+                }
+            }
+            
         }
     }
 
     
     //MARK: - Helpers
     private func configureUI() {
+        profileImageView.delegate = self
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "icons8-settings-80"), style: .plain, target: self, action: #selector(handleRightBarTapped))
+        
+        let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe))
+        rightSwipe.direction = .right
+        view.addGestureRecognizer(rightSwipe)
+        
         view.backgroundColor = .white
         navigationItem.title = config == .userSearch ? "Explore" : "New Messages"
         
@@ -81,6 +111,7 @@ class SearchController: UITableViewController {
         
         if config == .messages {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleDismissal))
+            navigationItem.rightBarButtonItem = UIBarButtonItem()
         }
         
     }
@@ -98,6 +129,16 @@ class SearchController: UITableViewController {
     //MARK: - Selectors
     @objc private func handleDismissal() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    @objc private func handleRightSwipe(sender: UISwipeGestureRecognizer) {
+        if sender.direction == .right {
+            delegate?.handleProfileImageTappedForExplore()
+        }
+    }
+    
+    @objc private func handleRightBarTapped() {
+        logger("Handle right bar tapped..")
     }
 
 }
@@ -134,5 +175,11 @@ extension SearchController: UISearchResultsUpdating {
         tableView.reloadData()
         
     }
-    
+}
+
+//MARK: - CustomProfileImageViewDelegate
+extension SearchController: CustomProfileImageViewDelegate {
+    func handleProfileImageTapped() {
+        delegate?.handleProfileImageTappedForExplore()
+    }
 }

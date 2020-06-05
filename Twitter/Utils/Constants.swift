@@ -24,3 +24,5 @@ let kREF_TWEET_RETWEETS = kDB_REF.child("tweet-retweets")
 let kREF_NOTIFICATION = kDB_REF.child("notifications")
 let kREF_USER_REPLIES = kDB_REF.child("user-replies")
 let kREF_USER_USERNAMES = kDB_REF.child("user-usernames")
+
+let COLLECTION_MESSAGES = Firestore.firestore().collection("messages")

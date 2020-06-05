@@ -34,14 +34,14 @@ class ContainerController: UIViewController {
         checkIfUserIsLoggedIn()
     }
     
-    override var prefersStatusBarHidden: Bool {
-        return isHideStatusBar
-    }
-    
-    // configure animation for statusBar
-    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
-        return .slide
-    }
+//    override var prefersStatusBarHidden: Bool {
+//        return isHideStatusBar
+//    }
+//
+//    // configure animation for statusBar
+//    override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+//        return .slide
+//    }
     
     
     //MARK: - API
@@ -94,13 +94,19 @@ class ContainerController: UIViewController {
     }
     
     private func configureBlackView() {
-           blackView.frame = view.bounds
-           blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
-           blackView.alpha = 0
-           mainTabController.view.addSubview(blackView)
-           
-           let tap = UITapGestureRecognizer(target: self, action: #selector(dismissMenu))
-           blackView.addGestureRecognizer(tap)
+        
+        blackView.frame = view.bounds
+        blackView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+        blackView.alpha = 0
+        mainTabController.view.addSubview(blackView)
+       
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissMenu))
+        blackView.addGestureRecognizer(tap)
+        
+        let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleBlackViewLeftSwipe))
+        leftSwipe.direction = .left
+        blackView.addGestureRecognizer(leftSwipe)
+    
        }
     
     private func animateStatusBar() {
@@ -138,20 +144,8 @@ class ContainerController: UIViewController {
         nav.modalPresentationStyle = .fullScreen
         present(nav, animated: true, completion: nil)
     }
-
     
-    //MARK: - Selectors
-    @objc private func dismissMenu() {
-        print("Debug: handle dismissMenu....")
-        isHideStatusBar = false
-        animateMenu(shouldExpand: false)
-    }
-
-}
-
-//MARK: - MainTabControllerDelegate
-extension ContainerController: MainTabControllerDelegate {
-    func handleProfileImageTapped(_ controller: FeedController) {
+    private func presentMenu() {
         isHideStatusBar = true
         animateMenu(shouldExpand: true)
         
@@ -162,11 +156,48 @@ extension ContainerController: MainTabControllerDelegate {
             self.menuController.user.stats = stats
         }
     }
+
+    
+    //MARK: - Selectors
+    @objc private func dismissMenu() {
+        print("Debug: handle dismissMenu....")
+        isHideStatusBar = false
+        animateMenu(shouldExpand: false)
+    }
+    
+    @objc private func handleBlackViewLeftSwipe(sender: UISwipeGestureRecognizer) {
+        if sender.direction == .left {
+            animateMenu(shouldExpand: false)
+        }
+    }
+
+}
+
+//MARK: - MainTabControllerDelegate
+extension ContainerController: MainTabControllerDelegate {
+    func handleProfileImageTappedForFeed() {
+        presentMenu()
+    }
+    
+    func handleProfileImageTappedForExplore() {
+        presentMenu()
+    }
+    
+    func handleProfileImageTappedForNotifications() {
+        presentMenu()
+    }
+    
+    func handleProfileImageTappedForConversation() {
+        presentMenu()
+    }
     
 }
 
 //MARK: - MenuControllerDelegate
 extension ContainerController: MenuControllerDelegate {
+    func handleLeftSwipe() {
+        animateMenu(shouldExpand: false)
+    }
     
     func handleMenuOption(_ controller: MenuController, option: MenuOptions) {
         self.isHideStatusBar = false

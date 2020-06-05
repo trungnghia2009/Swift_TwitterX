@@ -17,6 +17,7 @@ protocol MenuControllerDelegate: class {
     func handleFollowingTapped(_ header: MenuHeader)
     
     func handleMenuOption(_ controller: MenuController, option: MenuOptions)
+    func handleLeftSwipe()
 }
 
 class MenuController: UITableViewController {
@@ -66,6 +67,10 @@ class MenuController: UITableViewController {
     
     //MARK: - Helpers
     private func configureUI() {
+        let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleLeftSwipe))
+        leftSwipe.direction = .left
+        view.addGestureRecognizer(leftSwipe)
+        
         navigationController?.navigationBar.isHidden = true
     }
     
@@ -81,7 +86,11 @@ class MenuController: UITableViewController {
     
     
     //MARK: - Selectors
-    
+    @objc private func handleLeftSwipe(sender: UISwipeGestureRecognizer) {
+        if sender.direction == .left {
+            delegate?.handleLeftSwipe()
+        }
+    }
 }
 
 

@@ -11,13 +11,19 @@ import UIKit
 private let reuseIdentifier = "NotificationCell"
 
 protocol NotificationsControllerDelegate: class {
-    func didFetchNotifications(_ controller: NotificationsController)
+    func handleProfileImageTappedForNotifications()
 }
 
 class NotificationsController: UITableViewController {
 
     //MARK: - Properties
     weak var delegate: NotificationsControllerDelegate?
+    
+    private let profileImageView = CustomProfileImageView(frame: .zero)
+    
+    var user: User? {
+        didSet { profileImageView.user = user }
+    }
     
     var isRemoveObserver = false
     
@@ -63,6 +69,13 @@ class NotificationsController: UITableViewController {
     
     //MARK: - Helpers
     private func configureUI() {
+        profileImageView.delegate = self
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
+        
+        let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe))
+        rightSwipe.direction = .right
+        view.addGestureRecognizer(rightSwipe)
+        
         view.backgroundColor = .white
         navigationItem.title = "Notifications"
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Remove All", style: .plain, target: self, action: #selector(handleRightBarButtonTapped))
@@ -111,6 +124,12 @@ class NotificationsController: UITableViewController {
         }))
         alertController.addAction(UIAlertAction(title: "Cancel", style: .default, handler: nil))
         present(alertController, animated: true, completion: nil)
+    }
+    
+    @objc private func handleRightSwipe(sender: UISwipeGestureRecognizer) {
+        if sender.direction == .right {
+            delegate?.handleProfileImageTappedForNotifications()
+        }
     }
 
 }
@@ -170,6 +189,14 @@ extension NotificationsController {
             let controller = TweetController(tweet: tweet)
             self.navigationController?.pushViewController(controller, animated: true)
         }
+    }
+}
+
+
+//MARK: - CustomProfileImageViewDelegate
+extension NotificationsController: CustomProfileImageViewDelegate {
+    func handleProfileImageTapped() {
+        delegate?.handleProfileImageTappedForNotifications()
     }
 }
 

@@ -80,6 +80,7 @@ class UserListController: UITableViewController {
         navigationController?.navigationBar.barStyle = .default
     }
     
+    
     //MARK: - API
     private func fetchFollowing() {
         guard let user = user else { return }

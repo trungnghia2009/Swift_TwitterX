@@ -19,13 +19,17 @@ protocol TabBarReselectHandling {
 }
 
 protocol MainTabControllerDelegate: class {
-    func handleProfileImageTapped(_ controller: FeedController)
+    func handleProfileImageTappedForFeed()
+    func handleProfileImageTappedForExplore()
+    func handleProfileImageTappedForNotifications()
+    func handleProfileImageTappedForConversation()
 }
 
 class MainTabController: UITabBarController {
     
     //MARK: - Properties
     weak var delegateCallBack: MainTabControllerDelegate?
+    var isFlip = false
     
     private let feed = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
     private let explore = SearchController(config: .userSearch)
@@ -36,9 +40,21 @@ class MainTabController: UITabBarController {
     
     var user: User? {
         didSet {
-            guard let nav = viewControllers![0] as? UINavigationController else { return }
-            guard let feed = nav.viewControllers[0] as? FeedController else { return }
+            guard let nav1 = viewControllers![0] as? UINavigationController else { return }
+            guard let feed = nav1.viewControllers[0] as? FeedController else { return }
             feed.user = user
+            
+            guard let nav2 = viewControllers![1] as? UINavigationController else { return }
+            guard let explore = nav2.viewControllers[0] as? SearchController else { return }
+            explore.user = user
+            
+            guard let nav3 = viewControllers![2] as? UINavigationController else { return }
+            guard let notifications = nav3.viewControllers[0] as? NotificationsController else { return }
+            notifications.user = user
+            
+            guard let nav4 = viewControllers![3] as? UINavigationController else { return }
+            guard let conversations = nav4.viewControllers[0] as? ConversationsController else { return }
+            conversations.user = user
         }
     }
     
@@ -47,13 +63,22 @@ class MainTabController: UITabBarController {
         button.tintColor = .white
         button.backgroundColor = #colorLiteral(red: 0.05965350568, green: 0.5876290798, blue: 0.9076900482, alpha: 1)
         button.setImage(#imageLiteral(resourceName: "new_tweet"), for: .normal)
-        button.layer.shadowColor = UIColor.black.cgColor
-        button.layer.shadowOffset = CGSize(width: 5, height: 5)
-        button.layer.shadowRadius = 4
-        button.layer.shadowOpacity = 0.2
+        button.addShadow()
         button.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
         return button
     }()
+
+    //Add tabBar bounce effect
+    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        guard let barItemView = item.value(forKey: "view") as? UIView else { return }
+        
+        let timeInterval: TimeInterval = 0.3
+        let propertyAnimator = UIViewPropertyAnimator(duration: timeInterval, dampingRatio: 0.5) {
+            barItemView.transform = CGAffineTransform.identity.scaledBy(x: 1.25, y: 1.25)
+        }
+        propertyAnimator.addAnimations({ barItemView.transform = .identity }, delayFactor: CGFloat(timeInterval))
+        propertyAnimator.startAnimation()
+    }
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -83,6 +108,9 @@ class MainTabController: UITabBarController {
     
     private func configureViewControllers() {
         feed.delegate = self
+        explore.delegate = self
+        notifications.delegate = self
+        conversations.delegate = self
         
         let nav1 = templateNaviationController(image: UIImage(systemName: "house.fill")!, rootViewController: feed)
         let nav2 = templateNaviationController(image: UIImage(systemName: "magnifyingglass")!, rootViewController: explore)
@@ -124,12 +152,14 @@ class MainTabController: UITabBarController {
 }
 
 
+
 //MARK: - UITabBarControllerDelegate
 extension MainTabController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         let index = viewControllers?.firstIndex(of: viewController)
         let imageName = index == 3 ? #imageLiteral(resourceName: "mail")  : #imageLiteral(resourceName: "new_tweet")
-        actionButton.setImage(imageName, for: .normal)
+        
+        
         buttonConfig = index == 3 ? .message : .tweet
         
         if index == 2 {
@@ -137,7 +167,35 @@ extension MainTabController: UITabBarControllerDelegate {
             tabBar.items![2].badgeValue = nil
         }
         
+        if index == 3 {
+            if !isFlip {
+                UIView.animate(withDuration: 0, animations: {
+                    self.actionButton.clearShadow()
+                }) { (_) in
+                    UIView.transition(with: self.actionButton, duration: 0.3, options: .transitionFlipFromLeft, animations: {
+                        self.actionButton.setImage(imageName, for: .normal)
+                    }){ (_) in
+                        self.actionButton.addShadow()
+                    }
+                }
+            }
+            isFlip = true
+        } else {
+            if isFlip {
+                UIView.animate(withDuration: 0, animations: {
+                    self.actionButton.clearShadow()
+                }) { (_) in
+                    UIView.transition(with: self.actionButton, duration: 0.3, options: .transitionFlipFromRight, animations: {
+                        self.actionButton.setImage(imageName, for: .normal)
+                    }){ (_) in
+                        self.actionButton.addShadow()
+                    }
+                }
+            }
+            isFlip = false
+        }
     }
+    
     
     //Handle shouldSelect
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
@@ -150,10 +208,28 @@ extension MainTabController: UITabBarControllerDelegate {
     }
 }
 
+//MARK: - FeedControllerDelegate
 extension MainTabController: FeedControllerDelegate {
-    func handleProfileImageTapped(_ controller: FeedController) {
-        delegateCallBack?.handleProfileImageTapped(controller)
+    func handleProfileImageTappedForFeed() {
+        delegateCallBack?.handleProfileImageTappedForFeed()
     }
-    
-    
+}
+
+//MARK: - FeedControllerDelegate
+extension MainTabController: SearchControllerDelegate {
+    func handleProfileImageTappedForExplore() {
+        delegateCallBack?.handleProfileImageTappedForExplore()
+    }
+}
+
+extension MainTabController: NotificationsControllerDelegate {
+    func handleProfileImageTappedForNotifications() {
+        delegateCallBack?.handleProfileImageTappedForNotifications()
+    }
+}
+
+extension MainTabController: ConversationsControllerDelegate {
+    func handleProfileImageTappedForConversations() {
+        delegateCallBack?.handleProfileImageTappedForConversation()
+    }
 }

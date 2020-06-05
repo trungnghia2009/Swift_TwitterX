@@ -99,9 +99,13 @@ extension UIView {
     
     func addShadow() {
         layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.45
-        layer.shadowOffset = CGSize(width: 0.5, height: 0.5)
-        layer.masksToBounds = false
+        layer.shadowOffset = CGSize(width: 5, height: 5)
+        layer.shadowRadius = 4
+        layer.shadowOpacity = 0.2
+    }
+    
+    func clearShadow() {
+        layer.shadowColor = UIColor.clear.cgColor
     }
 }
 
@@ -426,5 +430,36 @@ extension UIAlertController {
         if let bgView = self.view.subviews.first, let groupView = bgView.subviews.first, let contentView = groupView.subviews.first {
             contentView.backgroundColor = color
         }
+    }
+}
+
+extension UIApplication {
+    class var topViewController: UIViewController? { return getTopViewController() }
+    private class func getTopViewController(base: UIViewController? = UIApplication.shared.windows.filter { $0.isKeyWindow}.first?.rootViewController) -> UIViewController? {
+        if let nav = base as? UINavigationController { return getTopViewController(base: nav.visibleViewController) }
+        if let tab = base as? UITabBarController {
+            if let selected = tab.selectedViewController { return getTopViewController(base: selected) }
+        }
+        if let presented = base?.presentedViewController { return getTopViewController(base: presented) }
+        return base
+    }
+
+    private class func _share(_ data: [Any],
+                              applicationActivities: [UIActivity]?,
+                              setupViewControllerCompletion: ((UIActivityViewController) -> Void)?) {
+        let activityViewController = UIActivityViewController(activityItems: data, applicationActivities: nil)
+        setupViewControllerCompletion?(activityViewController)
+        UIApplication.topViewController?.present(activityViewController, animated: true, completion: nil)
+    }
+
+    class func share(_ data: Any...,
+                     applicationActivities: [UIActivity]? = nil,
+                     setupViewControllerCompletion: ((UIActivityViewController) -> Void)? = nil) {
+        _share(data, applicationActivities: applicationActivities, setupViewControllerCompletion: setupViewControllerCompletion)
+    }
+    class func share(_ data: [Any],
+                     applicationActivities: [UIActivity]? = nil,
+                     setupViewControllerCompletion: ((UIActivityViewController) -> Void)? = nil) {
+        _share(data, applicationActivities: applicationActivities, setupViewControllerCompletion: setupViewControllerCompletion)
     }
 }

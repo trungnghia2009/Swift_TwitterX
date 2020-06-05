@@ -25,6 +25,8 @@ struct AuthService {
     
     let auth = Auth.auth()
     
+    let currentUid = Auth.auth().currentUser?.uid
+    
     func loginUser(withEmail email: String, password: String, completion: AuthDataResultCallback?) {
         auth.signIn(withEmail: email, password: password, completion: completion)
     }
