@@ -16,6 +16,8 @@ enum MenuOptions: Int, CaseIterable, CustomStringConvertible {
             return "Profile"
         case .lists:
             return "Lists"
+        case .bookmarks:
+            return "Bookmarks"
         case .logout:
             return "Log Out"
         }
@@ -23,6 +25,7 @@ enum MenuOptions: Int, CaseIterable, CustomStringConvertible {
     
     case profile
     case lists
+    case bookmarks
     case logout
 }
 
@@ -37,8 +40,11 @@ struct MenuViewModel {
             return UIImage(systemName: "person")!
         case .lists:
             return UIImage(systemName: "list.dash")!
+        case .bookmarks:
+            return UIImage(systemName: "bookmark")!
         case .logout:
             return UIImage(systemName: "escape")!
+        
         }
     }
     

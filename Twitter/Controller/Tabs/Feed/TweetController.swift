@@ -156,7 +156,7 @@ extension TweetController: TweetHeaderDelegate {
     
     func handleLikedUsersTapped(_ header: TweetHeader) {
         guard let tweetID = header.tweet?.tweetID else { return }
-        let controller = UserListController(tweetID: tweetID, type: .liked, from: .others)
+        let controller = UserListController(tweetID: tweetID, type: .liked)
         navigationController?.pushViewController(controller, animated: true)
     }
     

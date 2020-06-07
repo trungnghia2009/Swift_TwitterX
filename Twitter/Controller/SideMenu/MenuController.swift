@@ -25,6 +25,8 @@ class MenuController: UITableViewController {
     //MARK: - Properties
     weak var delegate: MenuControllerDelegate?
     
+    var currentActiveNav: UINavigationController?
+    
     var user: User {
         didSet {
             menuHeader.user = user
@@ -33,7 +35,7 @@ class MenuController: UITableViewController {
     
     private lazy var menuHeader: MenuHeader = {
         let frame = CGRect(x: 0, y: 0,
-                           width: view.frame.width - 80, height: 200)
+                           width: view.frame.width - 80, height: 180)
         let view = MenuHeader(user: user, frame: frame)
         logger(withDebug: "in menuHeader with email \(user.email)..")
         return view

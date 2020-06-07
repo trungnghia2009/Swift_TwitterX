@@ -30,11 +30,6 @@ enum ListType: CustomStringConvertible {
     }
 }
 
-enum FromOptions {
-    case others
-    case menu
-}
-
 protocol UserListControllerDelegate: class {
     func didSelect(user: User)
 }
@@ -47,7 +42,6 @@ class UserListController: UITableViewController {
     private var user: User?
     private var tweetID: String?
     private let type: ListType
-    private let from: FromOptions
     
     private var users = [User]() {
         didSet { tableView.reloadData() }
@@ -55,11 +49,10 @@ class UserListController: UITableViewController {
     
 
     //MARK: - Lifecycle
-    init(user: User? = nil, tweetID: String? = nil, type: ListType, from: FromOptions = .others) {
+    init(user: User? = nil, tweetID: String? = nil, type: ListType) {
         self.user = user
         self.tweetID = tweetID
         self.type = type
-        self.from = from
         super.init(style: .plain)
     }
     
@@ -141,13 +134,7 @@ class UserListController: UITableViewController {
     }
     
     @objc private func handleLeftBarTapped() {
-        switch from {
-        case .others:
-            navigationController?.popViewController(animated: true)
-        case .menu:
-            dismiss(animated: true, completion: nil)
-        }
-        
+        navigationController?.popViewController(animated: true)
     }
 
 }

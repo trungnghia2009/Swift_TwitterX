@@ -23,6 +23,7 @@ protocol MainTabControllerDelegate: class {
     func handleProfileImageTappedForExplore()
     func handleProfileImageTappedForNotifications()
     func handleProfileImageTappedForConversation()
+    func getIndexOfCurrentTab(index: Int)
 }
 
 class MainTabController: UITabBarController {
@@ -31,10 +32,10 @@ class MainTabController: UITabBarController {
     weak var delegateCallBack: MainTabControllerDelegate?
     var isFlip = false
     
-    private let feed = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
-    private let explore = SearchController(config: .userSearch)
-    private let notifications = NotificationsController()
-    private let conversations = ConversationsController()
+    let feed = FeedController(collectionViewLayout: UICollectionViewFlowLayout())
+    let explore = SearchController(config: .userSearch)
+    let notifications = NotificationsController()
+    let conversations = ConversationsController()
     
     private var buttonConfig: ActionButtonConfiguration = .tweet
     
@@ -157,8 +158,8 @@ class MainTabController: UITabBarController {
 extension MainTabController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         let index = viewControllers?.firstIndex(of: viewController)
+        delegateCallBack?.getIndexOfCurrentTab(index: index!)
         let imageName = index == 3 ? #imageLiteral(resourceName: "mail")  : #imageLiteral(resourceName: "new_tweet")
-        
         
         buttonConfig = index == 3 ? .message : .tweet
         

@@ -74,13 +74,6 @@ class MenuHeader: UIView {
         return label
     }()
     
-    private let underline: UIView = {
-        let view = UIView()
-        view.backgroundColor = .lightGray
-        view.setHeight(height: 1.25)
-        return view
-    }()
-    
     
     //MARK: - Lifecycle
     init(user: User, frame: CGRect) {
@@ -103,13 +96,7 @@ class MenuHeader: UIView {
         followStack.spacing = 8
         
         addSubview(followStack)
-        followStack.anchor(top: userDetailStack.bottomAnchor, left: leftAnchor, paddingTop: 12, paddingLeft: 12)
-        
-        addSubview(underline)
-        underline.anchor(left: leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingBottom: 12)
-        
-        
-        
+        followStack.anchor(top: userDetailStack.bottomAnchor, left: leftAnchor, paddingTop: 12, paddingLeft: 12) 
     }
     
     required init?(coder: NSCoder) {

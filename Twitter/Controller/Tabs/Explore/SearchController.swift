@@ -31,9 +31,18 @@ class SearchController: UITableViewController {
     }
     
     private let config: SearchControllerConfiguration
+    private let shareContent: String?
     
     private var users = [User]() {
         didSet { tableView.reloadData() }
+    }
+    
+    //For sharing tweet
+    private var selectedUsers = [User]() {
+        didSet {
+            navigationItem.rightBarButtonItem?.isEnabled = selectedUsers.count > 0
+            logger("user count is \(selectedUsers.count)")
+        }
     }
     
     private var filteredUsers = [User]() {
@@ -48,8 +57,9 @@ class SearchController: UITableViewController {
     
     
     //MARK: - Lifecycle
-    init(config: SearchControllerConfiguration) {
+    init(config: SearchControllerConfiguration, shareContent: String? = nil) {
         self.config = config
+        self.shareContent = shareContent
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -59,7 +69,6 @@ class SearchController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         configureUI()
         fetchUsers()
         configureSearchController()
@@ -95,14 +104,32 @@ class SearchController: UITableViewController {
     private func configureUI() {
         profileImageView.delegate = self
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: #imageLiteral(resourceName: "icons8-settings-80"), style: .plain, target: self, action: #selector(handleRightBarTapped))
+        navigationItem.rightBarButtonItem =  {
+            if let _ = shareContent {
+                return UIBarButtonItem(image: UIImage(systemName: "paperplane"), style: .plain, target: self, action: #selector(handleRightBarTapped))
+            }
+            return UIBarButtonItem(image: #imageLiteral(resourceName: "icons8-settings-80"), style: .plain, target: self, action: #selector(handleRightBarTapped))
+        }()
         
         let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(handleRightSwipe))
         rightSwipe.direction = .right
         view.addGestureRecognizer(rightSwipe)
         
         view.backgroundColor = .white
-        navigationItem.title = config == .userSearch ? "Explore" : "New Messages"
+        
+        navigationItem.title = {
+            
+            if let _ = shareContent {
+                return "Send via Direct Message"
+            }
+            
+            switch config {
+            case .messages:
+                return "New Messages"
+            case .userSearch:
+                return "Explore"
+            }
+        }()
         
         tableView.register(UserCell.self, forCellReuseIdentifier: reuseIdentifier)
         tableView.rowHeight = 60
@@ -111,8 +138,13 @@ class SearchController: UITableViewController {
         
         if config == .messages {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleDismissal))
-            navigationItem.rightBarButtonItem = UIBarButtonItem()
+            guard let _ = shareContent else {
+                navigationItem.rightBarButtonItem = UIBarButtonItem()
+                return
+            }
+            navigationItem.rightBarButtonItem?.isEnabled = false
         }
+        
         
     }
     
@@ -138,7 +170,19 @@ class SearchController: UITableViewController {
     }
     
     @objc private func handleRightBarTapped() {
-        logger("Handle right bar tapped..")
+        if let shareContent = shareContent {
+            selectedUsers.forEach { (user) in
+                MessageService.shared.uploadMessage(shareContent, toUser: user) { (error) in
+                    if let error = error {
+                        self.showAlert(withMessage: error.localizedDescription)
+                        return
+                    }
+                }
+            }
+            dismiss(animated: true, completion: nil)
+        } else {
+            logger("Handle options..")
+        }
     }
 
 }
@@ -161,8 +205,31 @@ extension SearchController {
 extension SearchController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let user = isSearchMode ? filteredUsers[indexPath.row] : users[indexPath.row]
-        let controller = ProfileController(user: user)
-        navigationController?.pushViewController(controller, animated: true)
+        
+        // Share to chat
+        if let _ = shareContent {navigationItem.rightBarButtonItem?.isEnabled = selectedUsers.count > 0
+            if tableView.cellForRow(at: indexPath)?.accessoryType == UITableViewCell.AccessoryType.checkmark {
+                tableView.cellForRow(at: indexPath)?.accessoryType = UITableViewCell.AccessoryType.none
+                selectedUsers = selectedUsers.filter{ $0.uid != user.uid }
+                
+            } else {
+                tableView.cellForRow(at: indexPath)?.accessoryType = UITableViewCell.AccessoryType.checkmark
+                selectedUsers.append(user)
+            }
+            
+            return
+        }
+        
+        switch config {
+        case .messages:
+            let controller = MessageController(user: user)
+            navigationController?.pushViewController(controller, animated: true)
+        case .userSearch:
+            let controller = ProfileController(user: user)
+            navigationController?.pushViewController(controller, animated: true)
+        }
+        
+        
     }
 }
 

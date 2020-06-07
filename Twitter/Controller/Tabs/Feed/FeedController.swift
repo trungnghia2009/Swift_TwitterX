@@ -184,10 +184,15 @@ extension FeedController: CustomProfileImageViewDelegate {
 extension FeedController: TweetCellDelegate {
     func handleShareTapped(_ cell: TweetCell) {
         guard let tweet = cell.tweet else { return }
-        let shareContent = "From \(tweet.user.username) \n\(tweet.caption)"
+        let shareContent = "From @\(tweet.user.username) \n\(tweet.caption)"
         
         didSelectShareTweetAction({ (_) in
             self.logger("Handle Send via Direct message")
+            let controller = SearchController(config: .messages, shareContent: shareContent)
+            let nav = UINavigationController(rootViewController: controller)
+            nav.modalPresentationStyle = .fullScreen
+            self.present(nav, animated: true, completion: nil)
+        
         }, { (_) in
             self.logger("Handle Add tweet to bookmarks")
         }, { (_) in

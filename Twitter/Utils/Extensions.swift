@@ -123,7 +123,7 @@ extension UIViewController {
         gradient.frame = view.frame //Fit gradient to view
     }
     
-    func showLoader(_ show: Bool, withText text: String = "Loading...") {
+    func showLoader(_ show: Bool, withText text: String = "Loading") {
         view.endEditing(true)
         if show {
              UIViewController.hud.textLabel.text = text
@@ -461,5 +461,45 @@ extension UIApplication {
                      applicationActivities: [UIActivity]? = nil,
                      setupViewControllerCompletion: ((UIActivityViewController) -> Void)? = nil) {
         _share(data, applicationActivities: applicationActivities, setupViewControllerCompletion: setupViewControllerCompletion)
+    }
+}
+
+
+//MARK: - Scroll
+enum ScrollDirection {
+    case Top
+    case Right
+    case Bottom
+    case Left
+    
+    func contentOffsetWith(scrollView: UIScrollView) -> CGPoint {
+        var contentOffset = CGPoint.zero
+        switch self {
+            case .Top:
+                contentOffset = CGPoint(x: 0, y: -scrollView.contentInset.top)
+            case .Right:
+                contentOffset = CGPoint(x: scrollView.contentSize.width - scrollView.bounds.size.width, y: 0)
+            case .Bottom:
+                contentOffset = CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.bounds.size.height)
+            case .Left:
+                contentOffset = CGPoint(x: -scrollView.contentInset.left, y: 0)
+        }
+        return contentOffset
+    }
+}
+
+extension UIScrollView {
+    func scrollTo(direction: ScrollDirection, animated: Bool = true) {
+        self.setContentOffset(direction.contentOffsetWith(scrollView: self), animated: animated)
+    }
+    
+    func scrollToBottom(animated: Bool) {
+       if self.contentSize.height < self.bounds.size.height { return }
+       let bottomOffset = CGPoint(x: 0, y: self.contentSize.height - self.bounds.size.height)
+       self.setContentOffset(bottomOffset, animated: animated)
+    }
+    
+    func moveToFrame(contentOffset : CGFloat) {
+        self.setContentOffset(CGPoint(x: contentOffset, y: self.contentOffset.y), animated: true)
     }
 }

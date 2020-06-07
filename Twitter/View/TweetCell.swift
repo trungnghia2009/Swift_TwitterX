@@ -72,7 +72,7 @@ class TweetCell: UICollectionViewCell {
     }()
     
     private lazy var commentButton: UIButton = {
-        let button = createButton(withImageName: "comment")
+        let button = createButton(withSystemName: "message")
         button.addTarget(self, action: #selector(handleCommentTapped), for: .touchUpInside)
         return button
     }()
@@ -80,12 +80,11 @@ class TweetCell: UICollectionViewCell {
     private let commentAmount: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.text = "1"
         return label
     }()
     
     private lazy var retweetButton: UIButton = {
-        let button = createButton(withImageName: "retweet")
+        let button = createButton(withSystemName: "repeat")
         button.addTarget(self, action: #selector(handleRetweetTapped), for: .touchUpInside)
         return button
     }()
@@ -93,12 +92,11 @@ class TweetCell: UICollectionViewCell {
     private let retweetAmount: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.text = "2"
         return label
     }()
     
     private lazy var likeButton: UIButton = {
-        let button = createButton(withImageName: "like")
+        let button = createButton(withSystemName: "heart")
         button.addTarget(self, action: #selector(handleLikeTapped), for: .touchUpInside)
         return button
     }()
@@ -106,12 +104,11 @@ class TweetCell: UICollectionViewCell {
     private let likeAmount: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12)
-        label.text = "15"
         return label
     }()
     
     private lazy var shareButton: UIButton = {
-        let button = createButton(withImageName: "share")
+        let button = createButton(withSystemName: "square.and.arrow.up")
         button.addTarget(self, action: #selector(handleShareTapped), for: .touchUpInside)
         return button
     }()
@@ -159,16 +156,17 @@ class TweetCell: UICollectionViewCell {
         actionStack.distribution = .equalSpacing
         
         addSubview(actionStack)
-        actionStack.anchor(left: stack.leftAnchor, bottom: bottomAnchor, right: rightAnchor, paddingBottom: 8, paddingRight: 48)
+        actionStack.anchor(left: stack.leftAnchor, bottom: bottomAnchor, right: rightAnchor,
+                           paddingLeft: -20, paddingBottom: 8, paddingRight: 48)
         
         addSubview(commentAmount)
-        commentAmount.centerY(inView: commentButton, left: commentButton.rightAnchor, paddingLeft: -5)
+        commentAmount.centerY(inView: commentButton, left: commentButton.rightAnchor, paddingLeft: -15)
         
         addSubview(retweetAmount)
-        retweetAmount.centerY(inView: retweetButton, left: retweetButton.rightAnchor, paddingLeft: -5)
+        retweetAmount.centerY(inView: retweetButton, left: retweetButton.rightAnchor, paddingLeft: -15)
         
         addSubview(likeAmount)
-        likeAmount.centerY(inView: likeButton, left: likeButton.rightAnchor, paddingLeft: -5)
+        likeAmount.centerY(inView: likeButton, left: likeButton.rightAnchor, paddingLeft: -15)
         
         addSubview(underlineView)
         underlineView.anchor(left: leftAnchor, bottom: bottomAnchor, right: rightAnchor)
@@ -210,11 +208,12 @@ class TweetCell: UICollectionViewCell {
         }
     }
     
-    private func createButton(withImageName imageName: String) -> UIButton {
+    private func createButton(withSystemName systemName: String) -> UIButton {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(named: imageName), for: .normal)
+        button.setImage(UIImage(systemName: systemName), for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
         button.tintColor = .darkGray
-        button.setDimensions(width: 50, height: 20)
+        button.setDimensions(width: 60, height: 20)
         return button
     }
     

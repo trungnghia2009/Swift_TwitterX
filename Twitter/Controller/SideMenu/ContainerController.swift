@@ -18,6 +18,7 @@ class ContainerController: UIViewController {
     private var blackView = UIView()
     private var isHideStatusBar = false
     
+    private var currentActiveNav: UINavigationController?
     
     private var user: User? {
         didSet {
@@ -26,6 +27,8 @@ class ContainerController: UIViewController {
             configureMenuController(withUser: user)
         }
     }
+    
+    private var barIndex: Int = 0
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
@@ -131,20 +134,6 @@ class ContainerController: UIViewController {
         animateStatusBar()
     }
     
-    private func presentProfileController(withUser user: User) {
-        let controller = ProfileController(user: user, callFromOption: .fromMenu)
-        let nav = UINavigationController(rootViewController: controller)
-        nav.modalPresentationStyle = .fullScreen
-        self.present(nav, animated: true, completion: nil)
-    }
-    
-    private func presentUserListController(withUser user: User, withType type: ListType, from: FromOptions) {
-        let controller = UserListController(user: user, type: type, from: from)
-        let nav = UINavigationController(rootViewController: controller)
-        nav.modalPresentationStyle = .fullScreen
-        present(nav, animated: true, completion: nil)
-    }
-    
     private func presentMenu() {
         isHideStatusBar = true
         animateMenu(shouldExpand: true)
@@ -155,6 +144,24 @@ class ContainerController: UIViewController {
             self.logger("User has \(stats.followers) followers and \(stats.following) following")
             self.menuController.user.stats = stats
         }
+    }
+    
+    private func pushToController(controller: UIViewController) {
+        var parentController: UIViewController?
+        switch barIndex {
+        case 0:
+            parentController = mainTabController.feed
+        case 1:
+            parentController = mainTabController.explore
+        case 2:
+            parentController = mainTabController.notifications
+        case 3:
+            parentController = mainTabController.conversations
+        default:
+            break
+        }
+        
+        parentController?.navigationController?.pushViewController(controller, animated: true)
     }
 
     
@@ -175,6 +182,10 @@ class ContainerController: UIViewController {
 
 //MARK: - MainTabControllerDelegate
 extension ContainerController: MainTabControllerDelegate {
+    func getIndexOfCurrentTab(index: Int) {
+        barIndex = index
+    }
+    
     func handleProfileImageTappedForFeed() {
         presentMenu()
     }
@@ -205,12 +216,9 @@ extension ContainerController: MenuControllerDelegate {
             
             switch option {
             case .profile:
-                self.presentProfileController(withUser: controller.user)
+                self.pushToController(controller: ProfileController(user: controller.user))
             case .lists:
-                self.logger("tapped lists")
-                guard let user = self.user else { return }
-                let controller = ProfileController(user: user)
-                self.navigationController?.pushViewController(controller, animated: true)
+                self.logger("Show lists..")
             case .logout:
                 let alertController = UIAlertController(title: nil, message: "Are you sure you want to log out ?", preferredStyle: .actionSheet)
                 alertController.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { (_) in
@@ -219,6 +227,8 @@ extension ContainerController: MenuControllerDelegate {
                 alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
                 
                 self.present(alertController, animated: true, completion: nil)
+            case .bookmarks:
+                self.logger("tapped bookmarks..")
             }
         }
         
@@ -227,19 +237,19 @@ extension ContainerController: MenuControllerDelegate {
     func handleProfileImageTapped(_ header: MenuHeader) {
         isHideStatusBar = false
         animateMenu(shouldExpand: false)
-        presentProfileController(withUser: header.user)
+        pushToController(controller: ProfileController(user: header.user))
         
     }
     
     func handleFollowersTapped(_ header: MenuHeader) {
         animateMenu(shouldExpand: false)
-        presentUserListController(withUser: header.user, withType: .followers, from: .menu)
+        pushToController(controller: UserListController(user: header.user, type: .followers))
         
     }
     
     func handleFollowingTapped(_ header: MenuHeader) {
         animateMenu(shouldExpand: false)
-        self.presentUserListController(withUser: header.user, withType: .following, from: .menu)
+        pushToController(controller: UserListController(user: header.user, type: .following))
     }
     
     

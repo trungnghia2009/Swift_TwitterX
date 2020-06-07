@@ -11,14 +11,12 @@ import UIKit
 enum ProfileFilterOptions: Int, CaseIterable, CustomStringConvertible {
     case tweets
     case replies
-    case media
     case likes
     
     var description: String {
         switch self {
         case .tweets: return "Tweets"
-        case .replies: return "Replies"
-        case .media: return "Media"
+        case .replies: return "Tweet & replies"
         case .likes: return "Likes"
         }
     }
@@ -29,11 +27,11 @@ struct ProfileHeaderViewModel {
     private let user: User
     
     var followersString: NSAttributedString? {
-        return attributedText(withValue: user.stats?.followers ?? 0, text: "followers")
+        return attributedText(withValue: user.stats?.followers ?? 0, text: "Followers")
     }
     
     var followingString: NSAttributedString? {
-        return attributedText(withValue: user.stats?.following ?? 0, text: "following")
+        return attributedText(withValue: user.stats?.following ?? 0, text: "Following")
     }
     
     var profileImageUrl: URL? {
